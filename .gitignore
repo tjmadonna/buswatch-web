@@ -15,6 +15,10 @@
 # Go
 __debug_bin*
 
+# Python
+__pycache__/
+venv/
+
 # Misc
 notes*
 *.jsonc
