@@ -1,0 +1,48 @@
+# Build database stage
+FROM python:3.13-alpine3.23 AS db_builder
+
+RUN apk -U upgrade && \
+    apk add --no-cache curl unzip
+
+WORKDIR /data
+
+COPY scripts/generate_database /data
+
+RUN --mount=type=secret,id=build_secrets \
+    set -a && . /run/secrets/build_secrets && set +a && \
+    /data/run.sh
+
+RUN chmod 444 /data/database.db
+
+# Build web server stage
+FROM docker.io/golang:1.26-alpine3.23 AS app_builder
+
+# Install gcc and musl-dev for CGo (required by go-sqlite3)
+RUN apk -U upgrade && \
+    apk add --no-cache gcc musl-dev tzdata
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+RUN go mod download && mkdir ./ui
+
+COPY cmd/ ./cmd/
+COPY internal/ ./internal/
+COPY ui/efs.go ./ui/efs.go
+
+# Build a fully static binary
+RUN CGO_ENABLED=1 GOOS=linux go build \
+    -ldflags="-linkmode external -extldflags=-static" \
+    -o /app/app \
+    ./cmd/web
+
+# Final stage
+FROM dhi.io/alpine-base:3.23
+
+COPY --from=app_builder /app/app /usr/local/bin/app
+COPY --from=app_builder /usr/share/zoneinfo /usr/share/zoneinfo
+COPY --from=db_builder /data/database.db /data/database.db
+
+USER nonroot
+
+ENTRYPOINT ["/usr/local/bin/app"]

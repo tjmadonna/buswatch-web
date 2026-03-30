@@ -1,0 +1,36 @@
+# OS
+.DS_Store
+
+# Env
+.env
+.env.*
+
+# IDEs
+.vscode/
+
+# Database
+*.db*
+
+# NPM
+node_modules/
+
+# Format/Lint
+prettier*
+eslint*
+
+# Output
+dist/
+
+# Go
+__debug_bin*
+
+# Deployment
+deploy/
+
+# Misc
+notes*
+*.jsonc
+
+# Python
+__pycache__/
+venv/
