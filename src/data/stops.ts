@@ -6,7 +6,7 @@ const stopSchema = z.object({
     name: z.string(),
     latitude: z.number(),
     longitude: z.number(),
-    route_ids: z.array(z.string()),
+    routeIDs: z.array(z.string()),
 });
 
 const stopResponseSchema = z.object({
@@ -26,37 +26,6 @@ export async function fetchStop(stopId: string, signal?: AbortSignal): Promise<S
         throw new APIError(500, "Invalid response format");
     }
     return parsed.data.stop;
-}
-
-const arrivalSchema = z.object({
-    arrival_time: z.pipe(
-        z.iso.datetime(),
-        z.transform((d) => new Date(d)),
-    ),
-    occupancy: z.union([z.literal(-1), z.literal(0), z.literal(1), z.literal(2)]),
-    direction: z.enum(["Inbound", "Outbound"]),
-    route_id: z.string(),
-    trip_name: z.string(),
-    vehicle_id: z.string(),
-});
-
-const arrivalsResponseSchema = z.object({
-    arrivals: z.array(arrivalSchema),
-});
-
-export type Arrival = z.infer<typeof arrivalSchema>;
-
-export async function fetchArrivals(stopId: string, signal?: AbortSignal): Promise<Arrival[]> {
-    const res = await fetch(`${apiBase}/api/v1/stops/${encodeURIComponent(stopId)}/arrivals`, { signal });
-    if (!res.ok) {
-        throw new APIError(res.status, res.statusText);
-    }
-    const data: unknown = await res.json();
-    const parsed = arrivalsResponseSchema.safeParse(data);
-    if (!parsed.success) {
-        throw new APIError(500, "Invalid response format");
-    }
-    return parsed.data.arrivals;
 }
 
 export interface Bounds {

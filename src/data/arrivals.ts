@@ -8,9 +8,9 @@ const arrivalSchema = z.object({
     ),
     occupancy: z.union([z.literal(-1), z.literal(0), z.literal(1), z.literal(2)]),
     direction: z.enum(["Inbound", "Outbound"]),
-    route_id: z.string(),
-    trip_name: z.string(),
-    vehicle_id: z.string(),
+    routeID: z.string(),
+    tripName: z.string(),
+    vehicleID: z.string(),
 });
 
 const arrivalsResponseSchema = z.object({
