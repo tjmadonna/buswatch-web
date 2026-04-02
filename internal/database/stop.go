@@ -6,11 +6,11 @@ import (
 )
 
 type GetStopByCodeResult struct {
-	ID        string   `json:"id"`
-	Name      string   `json:"name"`
-	Longitude float64  `json:"longitude"`
-	Latitude  float64  `json:"latitude"`
-	RouteIDs  []string `json:"route_ids"`
+	ID        string
+	Name      string
+	Latitude  float64
+	Longitude float64
+	RouteIDs  []string
 }
 
 func (d *Database) GetStopByCode(code string, ctx context.Context) (GetStopByCodeResult, error) {
@@ -70,11 +70,11 @@ func (d *Database) GetStopsByCodes(codes []string, ctx context.Context) ([]GetSt
 }
 
 type GetStopsInLocationBoundsResult struct {
-	ID        string   `json:"id"`
-	Name      string   `json:"name"`
-	Latitude  float64  `json:"latitude"`
-	Longitude float64  `json:"longitude"`
-	RouteIDs  []string `json:"route_ids"`
+	ID        string
+	Name      string
+	Latitude  float64
+	Longitude float64
+	RouteIDs  []string
 }
 
 func (d *Database) GetStopsInLocationBounds(
