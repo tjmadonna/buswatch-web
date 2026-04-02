@@ -21,6 +21,9 @@ func createRoutes(app *application.Application) http.Handler {
 	mux := http.NewServeMux()
 
 	mux.Handle("GET /api/v1/health", handler.GetHealthHandler(app))
+	mux.Handle("GET /api/v1/stops", handler.GetStopsHandler(app))
+	mux.Handle("GET /api/v1/stops/{id}", handler.GetStopHandler(app))
+	mux.Handle("GET /api/v1/stops/{id}/arrivals", handler.GetArrivalsHandler(app))
 
 	if app.Environment == application.Production {
 		mux.Handle("GET /", createCompressedAssetFileServer(asset.AssetsFS))
