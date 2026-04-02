@@ -19,6 +19,10 @@ __debug_bin*
 __pycache__/
 venv/
 
+# Node
+node_modules/
+asset/assets/
+
 # Misc
 notes*
 *.jsonc

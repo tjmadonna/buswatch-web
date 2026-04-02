@@ -1,0 +1,15 @@
+# NPM
+node_modules/
+
+# Output
+dist/
+
+# IDE
+.vscode/
+
+# Public
+**/public/
+
+# Project
+notes*.md
+*.jsonc

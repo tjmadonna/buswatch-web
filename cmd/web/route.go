@@ -6,9 +6,9 @@ import (
 	"net/http/httputil"
 	"net/url"
 
+	"github.com/tjmadonna/buswatch/asset"
 	"github.com/tjmadonna/buswatch/cmd/web/application"
 	"github.com/tjmadonna/buswatch/cmd/web/handler"
-	"github.com/tjmadonna/buswatch/ui"
 )
 
 // createRoutes creates the routes for the application
@@ -18,7 +18,7 @@ func createRoutes(app *application.Application) http.Handler {
 	mux.Handle("GET /api/v1/health", handler.GetHealthHandler(app))
 
 	if app.Environment == application.Production {
-		mux.Handle("GET /", http.FileServerFS(ui.Files))
+		mux.Handle("GET /", http.FileServerFS(asset.AssetsFS))
 	} else {
 		mux.Handle("GET /", createViteProxy())
 	}
