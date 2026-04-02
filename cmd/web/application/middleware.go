@@ -5,6 +5,14 @@ import (
 	"net/http"
 )
 
+func (app *Application) WrapAPIMiddleware(h http.HandlerFunc) http.Handler {
+	m := app.CheckOrigin(h)
+	m = app.SetCORSHeaders(m)
+	m = app.LogRequest(m)
+	m = app.RecoverPanic(m)
+	return m
+}
+
 // CheckOrigin checks the request origin against the trusted origins
 func (app *Application) CheckOrigin(next http.Handler) http.Handler {
 	cop := http.NewCrossOriginProtection()
@@ -14,7 +22,12 @@ func (app *Application) CheckOrigin(next http.Handler) http.Handler {
 
 func (app *Application) SetCORSHeaders(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Access-Control-Allow-Origin", app.ServerURL)
+		if app.Environment == Production {
+			w.Header().Add("Access-Control-Allow-Origin", app.ServerURL)
+		} else {
+			w.Header().Add("Access-Control-Allow-Origin", "http://localhost:5173")
+		}
+
 		w.Header().Set("Access-Control-Allow-Methods", "GET")
 		next.ServeHTTP(w, r)
 	})

@@ -20,10 +20,10 @@ import (
 func createRoutes(app *application.Application) http.Handler {
 	mux := http.NewServeMux()
 
-	mux.Handle("GET /api/v1/health", handler.GetHealthHandler(app))
-	mux.Handle("GET /api/v1/stops", handler.GetStopsHandler(app))
-	mux.Handle("GET /api/v1/stops/{id}", handler.GetStopHandler(app))
-	mux.Handle("GET /api/v1/stops/{id}/arrivals", handler.GetArrivalsHandler(app))
+	mux.Handle("GET /api/v1/health", app.WrapAPIMiddleware(handler.GetHealthHandler(app)))
+	mux.Handle("GET /api/v1/stops", app.WrapAPIMiddleware(handler.GetStopsHandler(app)))
+	mux.Handle("GET /api/v1/stops/{id}", app.WrapAPIMiddleware(handler.GetStopHandler(app)))
+	mux.Handle("GET /api/v1/stops/{id}/arrivals", app.WrapAPIMiddleware(handler.GetArrivalsHandler(app)))
 
 	if app.Environment == application.Production {
 		mux.Handle("GET /", createCompressedAssetFileServer(asset.AssetsFS))
