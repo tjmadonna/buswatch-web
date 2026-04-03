@@ -1,4 +1,4 @@
-import { NavBar } from "@/components/nav-bar";
+import NavBar from "@/components/nav-bar";
 import { ThemeProvider } from "@/hooks/theme-provider";
 import { Outlet } from "react-router";
 

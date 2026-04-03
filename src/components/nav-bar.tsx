@@ -2,7 +2,7 @@ import { useTheme } from "@/hooks/use-theme";
 import { Map, Moon, Star, Sun } from "lucide-react";
 import { NavLink } from "react-router";
 
-export function NavBar() {
+export default function NavBar() {
     const { theme, toggle } = useTheme();
 
     return (
