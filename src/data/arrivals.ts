@@ -19,8 +19,8 @@ const arrivalsResponseSchema = z.object({
 
 export type Arrival = z.infer<typeof arrivalSchema>;
 
-export async function fetchArrivals(stopId: string, signal?: AbortSignal): Promise<Arrival[]> {
-    const res = await fetch(`${apiBase}/api/v1/stops/${encodeURIComponent(stopId)}/arrivals`, { signal });
+export async function fetchArrivals(stopID: string, signal?: AbortSignal): Promise<Arrival[]> {
+    const res = await fetch(`${apiBase}/api/v1/stops/${encodeURIComponent(stopID)}/arrivals`, { signal: signal });
     if (!res.ok) {
         throw new APIError(res.status, res.statusText);
     }

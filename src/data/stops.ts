@@ -15,8 +15,8 @@ const stopResponseSchema = z.object({
 
 export type Stop = z.infer<typeof stopSchema>;
 
-export async function fetchStop(stopId: string, signal?: AbortSignal): Promise<Stop> {
-    const res = await fetch(`${apiBase}/api/v1/stops/${encodeURIComponent(stopId)}`, { signal });
+export async function fetchStop(stopID: string, signal?: AbortSignal): Promise<Stop> {
+    const res = await fetch(`${apiBase}/api/v1/stops/${encodeURIComponent(stopID)}`, { signal: signal });
     if (!res.ok) {
         throw new APIError(res.status, res.statusText);
     }
