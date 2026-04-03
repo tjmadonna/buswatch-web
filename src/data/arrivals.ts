@@ -2,7 +2,7 @@ import { apiBase, APIError } from "@/data";
 import * as z from "zod/mini";
 
 const arrivalSchema = z.object({
-    arrival_time: z.pipe(
+    arrivalTime: z.pipe(
         z.iso.datetime(),
         z.transform((d) => new Date(d)),
     ),
