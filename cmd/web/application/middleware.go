@@ -16,7 +16,11 @@ func (app *Application) WrapAPIMiddleware(h http.HandlerFunc) http.Handler {
 // CheckOrigin checks the request origin against the trusted origins
 func (app *Application) CheckOrigin(next http.Handler) http.Handler {
 	cop := http.NewCrossOriginProtection()
-	cop.AddTrustedOrigin(app.ServerURL)
+	if app.Environment == Production {
+		cop.AddTrustedOrigin(app.ServerURL)
+	} else {
+		cop.AddTrustedOrigin("http://localhost:5173")
+	}
 	return cop.Handler(next)
 }
 
