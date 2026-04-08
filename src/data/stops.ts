@@ -28,6 +28,20 @@ export async function fetchStop(stopID: string, signal?: AbortSignal): Promise<S
     return parsed.data.stop;
 }
 
+export async function fetchStops(stopIDs: string[], signal?: AbortSignal): Promise<Stop[]> {
+    const query = stopIDs.join(",");
+    const res = await fetch(`${apiBase}/api/v1/stops?ids=${encodeURIComponent(query)}`, { signal: signal });
+    if (!res.ok) {
+        throw new APIError(res.status, res.statusText);
+    }
+    const data: unknown = await res.json();
+    const parsed = stopsResponseSchema.safeParse(data);
+    if (!parsed.success) {
+        throw new APIError(500, "Invalid response format");
+    }
+    return parsed.data.stops;
+}
+
 export interface Bounds {
     north: number;
     south: number;

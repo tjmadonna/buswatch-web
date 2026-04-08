@@ -1,10 +1,12 @@
 /* eslint-disable react-refresh/only-export-components */
 import MainLayout from "@/components/main-layout";
+import ArrivalsPage from "@/pages/arrivals/arrivals-page";
+import HomePage from "@/pages/home/home-page";
+import NotFoundPage from "@/pages/not-found/not-found-page";
 import "@/style.css";
 import { lazy, StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router";
-import NotFoundPage from "./pages/not-found/not-found-page";
 
 const root = document.getElementById("root");
 if (!root) {
@@ -18,6 +20,7 @@ createRoot(root).render(
         <BrowserRouter>
             <Routes>
                 <Route element={<MainLayout />}>
+                    <Route path="/" element={<HomePage />} />
                     <Route
                         path="/stops"
                         element={
@@ -26,6 +29,7 @@ createRoot(root).render(
                             </Suspense>
                         }
                     />
+                    <Route path="/stops/:stopID/arrivals" element={<ArrivalsPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                 </Route>
             </Routes>
