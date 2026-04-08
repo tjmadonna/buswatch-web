@@ -2,122 +2,122 @@ import { APIError } from "@/data";
 import { fetchArrivals, type Arrival } from "@/data/arrivals";
 import { fetchStop, type Stop } from "@/data/stops";
 import { isAbortError } from "@/utils";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 
 export const REFRESH_INTERVAL = 15; // seconds
 
 export function useArrivalsData(stopID?: string) {
     const [arrivals, setArrivals] = useState<Arrival[] | null>(null);
     const [error, setError] = useState<APIError | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+    const [isLoading, setIsLoading] = useState(true);
+    const [isRefreshing, startRefreshTransition] = useTransition();
+    const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
     const [stop, setStop] = useState<Stop | null>(null);
 
-    const timerRef = useRef<number | null>(null);
     const abortControllerRef = useRef<AbortController | null>(null);
+    const stopIDRef = useRef<string | null>(null);
+    const timerRef = useRef<number | null>(null);
 
-    const clearRefreshTimer = useCallback(() => {
-        if (timerRef.current) {
+    const clearTimer = useCallback(() => {
+        if (timerRef.current !== null) {
             clearInterval(timerRef.current);
             timerRef.current = null;
         }
     }, []);
 
-    const setFetchError = useCallback((err: unknown) => {
-        if (err instanceof APIError) {
-            setError(err);
-            return;
+    const fetchAndUpdateArrivals = useCallback(async (id: string, signal: AbortSignal) => {
+        try {
+            const fetched = await fetchArrivals(id, signal);
+            setArrivals(fetched);
+            setLastUpdated(new Date());
+            setError(null);
+        } catch (err: unknown) {
+            if (isAbortError(err)) {
+                return;
+            }
+            console.error("Failed to refresh arrivals:", err);
         }
-        setError(new APIError(500, ""));
     }, []);
 
-    const fetchAndStoreArrivals = useCallback(
-        async (id: string, signal?: AbortSignal, clearArrivalsOnError = false) => {
-            setIsLoading(true);
-            try {
-                const fetched = await fetchArrivals(id, signal);
-                setArrivals(fetched);
-                setLastUpdated(new Date());
-                setError(null);
-            } catch (err: unknown) {
-                if (isAbortError(err)) {
-                    return;
-                }
-                if (clearArrivalsOnError) {
-                    setArrivals(null);
-                }
-                setFetchError(err);
-            } finally {
-                setIsLoading(false);
-            }
-        },
-        [setFetchError],
-    );
-
-    const startRefreshTimer = useCallback(
-        (id: string) => {
-            clearRefreshTimer();
+    const startTimer = useCallback(
+        (id: string, signal: AbortSignal) => {
+            clearTimer();
             timerRef.current = window.setInterval(() => {
-                void fetchAndStoreArrivals(id, abortControllerRef.current?.signal, true);
+                void fetchAndUpdateArrivals(id, signal);
             }, REFRESH_INTERVAL * 1000);
         },
-        [clearRefreshTimer, fetchAndStoreArrivals],
+        [clearTimer, fetchAndUpdateArrivals],
     );
 
     useEffect(() => {
-        if (!stopID) {
-            clearRefreshTimer();
-            abortControllerRef.current?.abort();
+        if (stopID === undefined) {
             return;
         }
 
-        clearRefreshTimer();
-        abortControllerRef.current?.abort();
-        abortControllerRef.current = new AbortController();
-        const signal = abortControllerRef.current.signal;
+        const id = stopID;
+        stopIDRef.current = id;
 
-        void (async () => {
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+        const { signal } = controller;
+
+        async function init() {
             setIsLoading(true);
             try {
-                const [s, fetched] = await Promise.all([fetchStop(stopID, signal), fetchArrivals(stopID, signal)]);
-                setStop(s);
-                setArrivals(fetched);
+                const [fetchedStop, fetchedArrivals] = await Promise.all([
+                    fetchStop(id, signal),
+                    fetchArrivals(id, signal),
+                ]);
+                setStop(fetchedStop);
+                setArrivals(fetchedArrivals);
                 setLastUpdated(new Date());
                 setError(null);
-                startRefreshTimer(stopID);
+                startTimer(id, signal);
             } catch (err: unknown) {
                 if (isAbortError(err)) {
                     return;
                 }
                 setStop(null);
                 setArrivals(null);
-                setFetchError(err);
+                setError(err instanceof APIError ? err : new APIError(500, ""));
             } finally {
-                setIsLoading(false);
+                if (!signal.aborted) {
+                    setIsLoading(false);
+                }
             }
-        })();
-
-        return () => {
-            clearRefreshTimer();
-            abortControllerRef.current?.abort();
-        };
-    }, [clearRefreshTimer, setFetchError, startRefreshTimer, stopID]);
-
-    const refresh = useCallback(async () => {
-        if (!stopID) return;
-
-        if (!abortControllerRef.current) {
-            abortControllerRef.current = new AbortController();
         }
 
-        await fetchAndStoreArrivals(stopID, abortControllerRef.current.signal, true);
-        startRefreshTimer(stopID);
-    }, [fetchAndStoreArrivals, startRefreshTimer, stopID]);
+        void init();
+
+        return () => {
+            abortControllerRef.current?.abort();
+            abortControllerRef.current = null;
+            clearTimer();
+        };
+    }, [stopID, clearTimer, startTimer]);
+
+    const refresh = useCallback(() => {
+        const id = stopIDRef.current;
+        if (id === null) {
+            return;
+        }
+
+        clearTimer();
+        abortControllerRef.current?.abort();
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+
+        startRefreshTransition(async () => {
+            await fetchAndUpdateArrivals(id, controller.signal);
+            startTimer(id, controller.signal);
+        });
+    }, [clearTimer, fetchAndUpdateArrivals, startRefreshTransition, startTimer]);
 
     return {
         arrivals: arrivals,
         error: error,
         isLoading: isLoading,
+        isRefreshing: isRefreshing,
         lastUpdated: lastUpdated,
         refresh: refresh,
         stop: stop,

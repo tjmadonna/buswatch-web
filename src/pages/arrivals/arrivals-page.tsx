@@ -16,7 +16,7 @@ export default function ArrivalsPage() {
     const params = useParams<{ stopID: string }>();
     const [hiddenRoutes, setHiddenRoutes] = useLocalStorage(`hiddenRoutes:${params.stopID}`, z.array(z.string()), []);
 
-    const { arrivals, error, isLoading, lastUpdated, refresh, stop } = useArrivalsData(params.stopID);
+    const { arrivals, error, isLoading, isRefreshing, lastUpdated, refresh, stop } = useArrivalsData(params.stopID);
 
     if (!stop) {
         if (isLoading) {
@@ -58,22 +58,24 @@ export default function ArrivalsPage() {
                     <h2 className="text-muted-foreground text-sm font-semibold tracking-wider uppercase">
                         Arriving soon
                     </h2>
-                    <p className="text-muted-foreground text-xs">
-                        Updated{" "}
-                        {lastUpdated.toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            second: "2-digit",
-                        })}
-                    </p>
+                    {lastUpdated && (
+                        <p className="text-muted-foreground text-xs">
+                            Updated{" "}
+                            {lastUpdated.toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                second: "2-digit",
+                            })}
+                        </p>
+                    )}
                 </div>
                 <button
                     type="button"
-                    onClick={() => void refresh()}
-                    disabled={isLoading}
+                    onClick={refresh}
+                    disabled={isLoading || isRefreshing}
                     className="bg-secondary text-secondary-foreground hover:bg-secondary/80 flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors disabled:opacity-50"
                     aria-label="Refresh arrival times">
-                    <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />
+                    <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
                     Refresh
                 </button>
             </div>
