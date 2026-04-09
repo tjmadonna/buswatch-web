@@ -14,6 +14,22 @@ RUN --mount=type=secret,id=build_secrets \
 
 RUN chmod 444 /data/database.db
 
+# Build the React UI stage
+FROM node:24-alpine3.23 AS ui_builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY index.html vite.config.ts tsconfig.json tsconfig.app.json tsconfig.node.json ./
+COPY src/ ./src/
+COPY public/ ./public/
+
+RUN --mount=type=secret,id=build_secrets \
+    set -a && . /run/secrets/build_secrets && set +a && \
+    npm run build
+
 # Build web server stage
 FROM docker.io/golang:1.26-alpine3.23 AS app_builder
 
@@ -24,11 +40,12 @@ RUN apk -U upgrade && \
 WORKDIR /app
 
 COPY go.mod go.sum ./
-RUN go mod download && mkdir ./ui
+RUN go mod download
 
+COPY --from=ui_builder /app/asset/assets ./asset/assets
 COPY cmd/ ./cmd/
 COPY internal/ ./internal/
-COPY ui/efs.go ./ui/efs.go
+COPY asset/efs.go ./asset/efs.go
 
 # Build a fully static binary
 RUN CGO_ENABLED=1 GOOS=linux go build \
