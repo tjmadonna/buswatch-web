@@ -1,4 +1,5 @@
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useDelayedLoading } from "@/hooks/use-delayed-loading";
 import FavoriteStopCard from "@/pages/home/favorite-stop-card";
 import FavoriteStopsSkeleton from "@/pages/home/favorite-stops-skeleton";
 import { useFavoriteStopsData } from "@/pages/home/use-favorite-stops-data";
@@ -24,6 +25,7 @@ function getDataState(isLoading: boolean, error: unknown, count: number): DataSt
 export default function HomePage() {
     const [favoriteStopIDs] = useLocalStorage("favoriteStops", z.array(z.string()), []);
     const { favoriteStops, error, isLoading } = useFavoriteStopsData(favoriteStopIDs);
+    const showSkeleton = useDelayedLoading(isLoading);
 
     const dataState = getDataState(isLoading, error, favoriteStops.length);
 
@@ -31,7 +33,7 @@ export default function HomePage() {
         <main className="mx-auto max-w-xl px-4 py-6">
             <h1 className="text-foreground mb-6 text-2xl font-bold">Favorite Stops</h1>
 
-            {dataState == "loading" && <FavoriteStopsSkeleton />}
+            {dataState == "loading" && showSkeleton && <FavoriteStopsSkeleton />}
 
             {dataState == "error" && (
                 <div className="flex flex-col items-center gap-4 py-16 text-center">

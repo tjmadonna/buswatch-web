@@ -1,5 +1,6 @@
 import Error from "@/components/error";
 import { FavoriteToggle } from "@/components/favorite-toggle";
+import { useDelayedLoading } from "@/hooks/use-delayed-loading";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import BusArrivalCard from "@/pages/arrivals/bus-arrival-card";
 import { BusStopHeader } from "@/pages/arrivals/bus-stop-header";
@@ -15,12 +16,12 @@ import * as z from "zod/mini";
 export default function ArrivalsPage() {
     const params = useParams<{ stopID: string }>();
     const [hiddenRoutes, setHiddenRoutes] = useLocalStorage(`hiddenRoutes:${params.stopID}`, z.array(z.string()), []);
-
     const { arrivals, error, isLoading, isRefreshing, lastUpdated, refresh, stop } = useArrivalsData(params.stopID);
+    const showSkeleton = useDelayedLoading(isLoading);
 
     if (!stop) {
         if (isLoading) {
-            return <BusTimesSkeleton />;
+            return showSkeleton ? <BusTimesSkeleton /> : null;
         }
 
         if (error?.status === 404) {
