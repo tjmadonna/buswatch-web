@@ -19,7 +19,7 @@ export default function NavBar() {
                     }`
                 }>
                 <Star className="h-4 w-4" />
-                Favorites
+                Home
             </NavLink>
             <NavLink
                 to="/stops"
