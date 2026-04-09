@@ -21,7 +21,10 @@ export default function BusTimesSkeleton() {
                         </div>
                     </header>
                 </div>
-                <Skeleton className="h-9 w-9 rounded-md" />
+                <div className="flex gap-2">
+                    <Skeleton className="h-9 w-9 rounded-md" />
+                    <Skeleton className="h-9 w-9 rounded-md" />
+                </div>
             </div>
 
             {/* Subheader skeleton */}
