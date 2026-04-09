@@ -6,7 +6,7 @@ import { useEffect, useEffectEvent, useState } from "react";
 export function useFavoriteStopsData(stopIDs: string[]) {
     const [favoriteStops, setFavoriteStops] = useState<Stop[]>([]);
     const [error, setError] = useState<APIError | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const fetchOnMount = useEffectEvent(async (signal: AbortSignal) => {
         if (stopIDs.length === 0) {
@@ -25,7 +25,9 @@ export function useFavoriteStopsData(stopIDs: string[]) {
             }
             setError(err instanceof APIError ? err : new APIError(500, ""));
         } finally {
-            setIsLoading(false);
+            if (!signal.aborted) {
+                setIsLoading(false);
+            }
         }
     });
 
