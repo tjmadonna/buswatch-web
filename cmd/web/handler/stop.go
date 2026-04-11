@@ -19,12 +19,6 @@ type Stop struct {
 
 func GetStopHandler(app *application.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// only allow GET requests
-		if r.Method != http.MethodGet {
-			app.WriteMethodNotAllowedResponse(w, r, "method not allowed")
-			return
-		}
-
 		// get stop id from path and validate it
 		stopID := r.PathValue("id")
 		if !validateStopCode(stopID) {
@@ -55,12 +49,6 @@ func GetStopHandler(app *application.Application) http.HandlerFunc {
 
 func GetStopsHandler(app *application.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// only allow GET requests
-		if r.Method != http.MethodGet {
-			app.WriteMethodNotAllowedResponse(w, r, "method not allowed")
-			return
-		}
-
 		query := r.URL.Query()
 
 		q := query.Get("q")

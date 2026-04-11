@@ -6,8 +6,8 @@ import (
 	"github.com/tjmadonna/buswatch/cmd/web/application"
 )
 
-func GetHealthHandler(app *application.Application) http.HandlerFunc {
+func GetNotFoundHandler(app *application.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		app.WriteJSON(w, http.StatusOK, application.ResponseData{"status": "ok"}, nil)
+		app.WriteNotFoundResponse(w, r, "not found")
 	}
 }

@@ -23,12 +23,6 @@ type Arrival struct {
 
 func GetArrivalsHandler(app *application.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// only allow GET requests
-		if r.Method != http.MethodGet {
-			app.WriteMethodNotAllowedResponse(w, r, "method not allowed")
-			return
-		}
-
 		// get stop id from path
 		stopID := r.PathValue("id")
 		if stopID == "" || len(stopID) > 6 {

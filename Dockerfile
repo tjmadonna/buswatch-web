@@ -15,12 +15,15 @@ RUN --mount=type=secret,id=build_secrets \
 RUN chmod 444 /data/database.db
 
 # Build the React UI stage
-FROM node:24-alpine3.23 AS ui_builder
+FROM node:24.14-alpine3.23 AS ui_builder
+
+RUN apk -U upgrade
 
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm install -g npm@latest && \
+    npm ci
 
 COPY index.html vite.config.ts tsconfig.json tsconfig.app.json tsconfig.node.json ./
 COPY src/ ./src/

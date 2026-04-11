@@ -11,8 +11,9 @@
 # Database
 *.db*
 
-# NPM
+# Node
 node_modules/
+asset/assets/
 
 # Format/Lint
 prettier*

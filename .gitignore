@@ -15,6 +15,9 @@
 # Go
 __debug_bin*
 
+# Container
+podman*
+
 # Python
 __pycache__/
 venv/

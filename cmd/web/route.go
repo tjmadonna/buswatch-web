@@ -24,9 +24,14 @@ func createRoutes(app *application.Application) http.Handler {
 	mux.Handle("GET /api/v1/stops", app.WrapAPIMiddleware(handler.GetStopsHandler(app)))
 	mux.Handle("GET /api/v1/stops/{id}", app.WrapAPIMiddleware(handler.GetStopHandler(app)))
 	mux.Handle("GET /api/v1/stops/{id}/arrivals", app.WrapAPIMiddleware(handler.GetArrivalsHandler(app)))
+	mux.Handle("GET /api/", app.WrapAPIMiddleware(handler.GetNotFoundHandler(app)))
 
 	if app.Environment == application.Production {
-		mux.Handle("GET /", createCompressedAssetFileServer(asset.AssetsFS))
+		assetsFS, err := fs.Sub(asset.AssetsFS, "assets")
+		if err != nil {
+			log.Fatal("failed to create assets sub-filesystem:", err)
+		}
+		mux.Handle("GET /", createCompressedAssetFileServer(assetsFS))
 	} else {
 		mux.Handle("GET /", createViteProxy())
 	}
@@ -66,6 +71,11 @@ func createCompressedAssetFileServer(assetsFS fs.FS) http.Handler {
 
 		compressedAssetPath := assetPath + suffix
 		if !assetFileExists(assetsFS, compressedAssetPath) {
+			if !assetFileExists(assetsFS, assetPath) {
+				// Unknown path — serve index.html for SPA client-side routing
+				r = r.Clone(r.Context())
+				r.URL.Path = "/"
+			}
 			fileServer.ServeHTTP(w, r)
 			return
 		}
