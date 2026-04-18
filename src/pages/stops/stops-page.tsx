@@ -58,9 +58,6 @@ export default function StopsPage() {
 
             try {
                 const data = await fetchStopsByBounds(bounds, abortControllerRef.current.signal);
-                for (const stop of data) {
-                    console.log(`Stop ${stop.id}: ${stop.name} (${stop.latitude}, ${stop.longitude})`);
-                }
                 setStops(data);
                 setError(null);
             } catch (err: unknown) {
