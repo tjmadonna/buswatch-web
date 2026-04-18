@@ -18,6 +18,9 @@ __debug_bin*
 # Container
 podman*
 
+# Cloud Run
+cloud-run-env.yaml
+
 # Python
 __pycache__/
 venv/
