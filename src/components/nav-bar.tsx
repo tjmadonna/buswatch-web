@@ -7,7 +7,9 @@ export default function NavBar() {
 
     return (
         <nav className="bg-card border-border flex h-14 shrink-0 items-center gap-1 border-b px-4">
-            <span className="text-foreground mr-4 text-base font-bold tracking-tight">Pittsburgh Bus Watch</span>
+            <span className="text-foreground mr-4 text-xs font-bold tracking-tight sm:text-sm md:text-base">
+                Pittsburgh Bus Watch
+            </span>
             <NavLink
                 to="/"
                 end
