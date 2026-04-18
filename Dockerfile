@@ -1,5 +1,5 @@
 # Build database stage
-FROM python:3.13-alpine3.23 AS db_builder
+FROM --platform=$BUILDPLATFORM python:3.13-alpine3.23 AS db_builder
 
 RUN apk -U upgrade && \
     apk add --no-cache curl unzip
@@ -15,7 +15,7 @@ RUN --mount=type=secret,id=build_secrets \
 RUN chmod 444 /data/database.db
 
 # Build the React UI stage
-FROM node:24.14-alpine3.23 AS ui_builder
+FROM --platform=$BUILDPLATFORM node:24.14-alpine3.23 AS ui_builder
 
 RUN apk -U upgrade
 
@@ -34,11 +34,13 @@ RUN --mount=type=secret,id=build_secrets \
     npm run build
 
 # Build web server stage
-FROM docker.io/golang:1.26-alpine3.23 AS app_builder
+FROM --platform=$BUILDPLATFORM docker.io/golang:1.26-bookworm AS app_builder
 
-# Install gcc and musl-dev for CGo (required by go-sqlite3)
-RUN apk -U upgrade && \
-    apk add --no-cache gcc musl-dev tzdata
+# Install cross-compiler for CGo (required by go-sqlite3)
+# gcc-x86-64-linux-gnu provides the x86_64 cross-compiler for CGO
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gcc-x86-64-linux-gnu libc6-dev-amd64-cross tzdata && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -51,7 +53,9 @@ COPY internal/ ./internal/
 COPY asset/efs.go ./asset/efs.go
 
 # Build a fully static binary
-RUN CGO_ENABLED=1 GOOS=linux go build \
+# Cross-compile for linux/amd64 using the x86_64 cross-compiler
+RUN CC=x86_64-linux-gnu-gcc \
+    CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build \
     -ldflags="-linkmode external -extldflags=-static" \
     -o /app/app \
     ./cmd/web
