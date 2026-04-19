@@ -132,12 +132,12 @@ export default function StopsPage() {
                                     setSelectedStop(stop);
                                 }}
                                 className={cls(
-                                    "flex h-8 w-8 cursor-pointer items-center justify-center rounded-full shadow-md transition-transform hover:scale-110 focus:outline-none",
+                                    "flex h-10 w-10 cursor-pointer items-center justify-center rounded-full shadow-md transition-transform hover:scale-110 focus:outline-none sm:h-8 sm:w-8",
                                     selectedStop?.id === stop.id
                                         ? "bg-primary/80 text-primary-foreground scale-110"
                                         : "bg-primary text-primary-foreground hover:bg-primary/80",
                                 )}>
-                                <Bus className="h-4 w-4" />
+                                <Bus className="h-5 w-5 sm:h-4 sm:w-4" />
                             </button>
                         </Marker>
                     ))}
@@ -166,7 +166,7 @@ export default function StopsPage() {
                                     <button
                                         type="button"
                                         onClick={() => setSelectedStop(null)}
-                                        className="text-muted-foreground hover:text-foreground hover:bg-secondary -mt-0.5 -mr-1 shrink-0 rounded-md p-1.5 transition-colors focus:outline-none"
+                                        className="text-muted-foreground hover:text-foreground hover:bg-secondary -mt-0.5 -mr-1 shrink-0 rounded-md p-2.5 transition-colors focus:outline-none sm:p-1.5"
                                         aria-label="Close">
                                         <X className="h-4 w-4" />
                                     </button>
@@ -187,7 +187,7 @@ export default function StopsPage() {
                                     onClick={() =>
                                         void navigate(`/stops/${encodeURIComponent(selectedStop.id)}/arrivals`)
                                     }
-                                    className="bg-primary text-primary-foreground hover:bg-primary/80 flex w-full items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors">
+                                    className="bg-primary text-primary-foreground hover:bg-primary/80 flex w-full items-center justify-center gap-1.5 rounded-md px-3 py-2.5 text-sm font-medium transition-colors sm:py-1.5">
                                     View arrivals
                                     <ArrowRight className="h-3.5 w-3.5" />
                                 </button>
@@ -211,13 +211,13 @@ export default function StopsPage() {
             </div>
 
             {zoom < MIN_ZOOM && (
-                <div className="bg-card/90 text-muted-foreground border-border absolute bottom-4 left-1/2 -translate-x-1/2 rounded-md border px-4 py-2 text-sm shadow-md backdrop-blur-sm">
+                <div className="bg-card/90 text-muted-foreground border-border absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 rounded-md border px-4 py-2 text-sm shadow-md backdrop-blur-sm">
                     Zoom in to see bus stops
                 </div>
             )}
 
             {error && zoom >= MIN_ZOOM && (
-                <div className="bg-destructive text-destructive-foreground absolute bottom-4 left-1/2 -translate-x-1/2 rounded-md px-4 py-2 text-sm shadow-md">
+                <div className="bg-destructive text-destructive-foreground absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 rounded-md px-4 py-2 text-sm shadow-md">
                     Failed to load stops
                 </div>
             )}

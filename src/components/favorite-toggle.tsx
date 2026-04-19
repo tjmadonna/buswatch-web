@@ -22,7 +22,7 @@ export function FavoriteToggle({ stopID }: FavoriteToggleProps) {
         <button
             type="button"
             onClick={toggle}
-            className="border-border bg-card text-foreground hover:bg-secondary flex h-9 w-9 items-center justify-center rounded-md border transition-colors"
+            className="border-border bg-card text-foreground hover:bg-secondary flex h-11 w-11 items-center justify-center rounded-md border transition-colors sm:h-9 sm:w-9"
             aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}>
             {isFavorite ? <Star className="h-4 w-4" fill="currentColor" /> : <Star className="h-4 w-4" />}
         </button>

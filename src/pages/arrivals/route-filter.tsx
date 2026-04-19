@@ -37,7 +37,7 @@ export function RouteFilter({ onChange, routeIDs, selectedRoutes }: RouteFilterP
             <button
                 type="button"
                 onClick={() => setOpen((o) => !o)}
-                className={`border-border bg-card text-foreground hover:bg-secondary flex h-9 w-9 items-center justify-center rounded-md border transition-colors ${isFiltered ? "border-primary text-primary" : ""}`}
+                className={`border-border bg-card text-foreground hover:bg-secondary flex h-11 w-11 items-center justify-center rounded-md border transition-colors sm:h-9 sm:w-9 ${isFiltered ? "border-primary text-primary" : ""}`}
                 aria-label="Filter by route"
                 aria-expanded={open}>
                 <Filter className="h-4 w-4" />
@@ -56,12 +56,12 @@ export function RouteFilter({ onChange, routeIDs, selectedRoutes }: RouteFilterP
                     {routeIDs.map((id) => (
                         <label
                             key={id}
-                            className="hover:bg-secondary flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5">
+                            className="hover:bg-secondary flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-3 sm:py-1.5">
                             <input
                                 type="checkbox"
                                 checked={!selectedRoutes.includes(id)}
                                 onChange={() => toggle(id)}
-                                className="accent-primary h-3.5 w-3.5 cursor-pointer"
+                                className="accent-primary h-4 w-4 cursor-pointer"
                             />
                             <span className="text-foreground text-sm">Route {id}</span>
                         </label>
@@ -72,7 +72,7 @@ export function RouteFilter({ onChange, routeIDs, selectedRoutes }: RouteFilterP
                             <button
                                 type="button"
                                 onClick={() => onChange([])}
-                                className="text-muted-foreground hover:bg-secondary w-full rounded-md px-2 py-1.5 text-left text-xs">
+                                className="text-muted-foreground hover:bg-secondary w-full rounded-md px-2 py-3 text-left text-xs sm:py-1.5">
                                 Clear filters
                             </button>
                         </>

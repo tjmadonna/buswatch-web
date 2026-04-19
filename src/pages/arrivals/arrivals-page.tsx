@@ -74,7 +74,7 @@ export default function ArrivalsPage() {
                     type="button"
                     onClick={refresh}
                     disabled={isLoading || isRefreshing}
-                    className="bg-secondary text-secondary-foreground hover:bg-secondary/80 flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors disabled:opacity-50"
+                    className="bg-secondary text-secondary-foreground hover:bg-secondary/80 flex items-center gap-1.5 rounded-md px-3 py-2.5 text-sm transition-colors disabled:opacity-50 sm:py-1.5"
                     aria-label="Refresh arrival times">
                     <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
                     Refresh

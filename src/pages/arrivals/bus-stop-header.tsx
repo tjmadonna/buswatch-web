@@ -9,7 +9,7 @@ interface BusStopHeaderProps {
 export function BusStopHeader({ routes, stopID, stopName }: BusStopHeaderProps) {
     return (
         <header className="flex flex-col gap-4">
-            <div className="flex items-center gap-3">
+            <div className="flex items-start gap-3">
                 <div className="bg-primary/15 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
                     <MapPin className="text-primary h-5 w-5" />
                 </div>

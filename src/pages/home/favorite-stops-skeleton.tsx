@@ -11,7 +11,7 @@ function FavoriteStopCardSkeleton() {
                         <Skeleton className="h-3.5 w-20" />
                     </div>
                 </div>
-                <Skeleton className="h-8 w-8 rounded-md" />
+                <Skeleton className="h-11 w-11 shrink-0 rounded-md sm:h-9 sm:w-9" />
             </div>
             <div className="flex gap-1.5">
                 <Skeleton className="h-5 w-8 rounded-md" />

@@ -84,7 +84,12 @@ export default function StopSearch({ onSelect }: StopSearchProps) {
                     onFocus={() => results.length > 0 && setIsOpen(true)}
                     onKeyDown={(e) => e.key === "Escape" && setIsOpen(false)}
                     placeholder="Search stops…"
-                    className="text-foreground placeholder:text-muted-foreground w-full bg-transparent text-sm outline-none"
+                    inputMode="search"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    spellCheck={false}
+                    className="text-foreground placeholder:text-muted-foreground w-full bg-transparent text-base outline-none sm:text-sm"
                 />
                 {isLoading && (
                     <div className="border-primary h-3.5 w-3.5 shrink-0 animate-spin rounded-full border-2 border-t-transparent" />
@@ -99,7 +104,7 @@ export default function StopSearch({ onSelect }: StopSearchProps) {
                                 type="button"
                                 onMouseDown={(e) => e.preventDefault()} // prevent input blur before click
                                 onClick={() => handleSelect(stop)}
-                                className="hover:bg-secondary text-foreground flex w-full flex-col px-3 py-2 text-left transition-colors">
+                                className="hover:bg-secondary text-foreground flex w-full flex-col px-3 py-3 text-left transition-colors sm:py-2">
                                 <span className="text-sm font-medium">{stop.name}</span>
                                 <span className="text-muted-foreground font-mono text-xs">
                                     Stop #{stop.id} · {stop.routeIDs.join(", ")}
