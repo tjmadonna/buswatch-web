@@ -130,6 +130,13 @@ export default function StopsPage() {
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     setSelectedStop(stop);
+                                    setTimeout(() => {
+                                        mapRef.current?.getMap().easeTo({
+                                            center: [stop.longitude, stop.latitude],
+                                            duration: 600,
+                                            essential: true,
+                                        });
+                                    }, 0);
                                 }}
                                 className={cls(
                                     "flex h-10 w-10 cursor-pointer items-center justify-center rounded-full shadow-md transition-transform hover:scale-110 focus:outline-none sm:h-8 sm:w-8",
