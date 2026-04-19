@@ -47,7 +47,7 @@ func (app *Application) SetSecurityHeaders(next http.Handler) http.Handler {
 		w.Header().Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
 		w.Header().Set("Cross-Origin-Opener-Policy", "same-origin")
 		w.Header().Set("Cross-Origin-Resource-Policy", "same-site")
-		w.Header().Set("Permissions-Policy", "geolocation=(), microphone=(), camera=(), interest-cohort=()")
+		w.Header().Set("Permissions-Policy", "geolocation=(self), microphone=(), camera=(), interest-cohort=()")
 		w.Header().Set("Content-Security-Policy", "default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data: blob: https://tiles.openfreemap.org; connect-src 'self' https://tiles.openfreemap.org; manifest-src 'self'; worker-src 'self' blob:; frame-ancestors 'none';")
 
 		next.ServeHTTP(w, r)

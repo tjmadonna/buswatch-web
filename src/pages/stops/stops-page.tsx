@@ -4,7 +4,7 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useTheme } from "@/hooks/use-theme";
 import StopSearch from "@/pages/stops/stop-search";
 import { cls, isAbortError } from "@/utils";
-import { ArrowRight, Bus, X } from "lucide-react";
+import { ArrowRight, Bus, LocateFixed, X } from "lucide-react";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Map, Marker, Popup, type MapRef } from "react-map-gl/maplibre";
@@ -36,12 +36,47 @@ export default function StopsPage() {
     const [error, setError] = useState<APIError | null>(null);
     const [selectedStop, setSelectedStop] = useState<Stop | null>(null);
     const [zoom, setZoom] = useState<number>(savedState.zoom);
+    const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+    const [isLocating, setIsLocating] = useState(false);
+    const [locationError, setLocationError] = useState<string | null>(null);
 
     const abortControllerRef = useRef<AbortController | null>(null);
     const debounceTimerRef = useRef<number | null>(null);
     const mapRef = useRef<MapRef | null>(null);
 
     const mapStyle = theme === "dark" ? MAP_STYLE_DARK : MAP_STYLE_LIGHT;
+
+    function locateMe() {
+        if (!navigator.geolocation) {
+            setLocationError("Geolocation is not supported by your browser");
+            return;
+        }
+        setIsLocating(true);
+        setLocationError(null);
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const { latitude, longitude } = pos.coords;
+                setUserLocation({ latitude, longitude });
+                setIsLocating(false);
+                mapRef.current?.getMap().easeTo({
+                    center: [longitude, latitude],
+                    zoom: Math.max(mapRef.current.getMap().getZoom(), MIN_ZOOM),
+                    duration: 800,
+                    essential: true,
+                });
+            },
+            (err) => {
+                setIsLocating(false);
+                if (err.code === GeolocationPositionError.PERMISSION_DENIED) {
+                    setLocationError("Location access denied");
+                } else {
+                    setLocationError("Unable to get your location");
+                }
+                setTimeout(() => setLocationError(null), 4000);
+            },
+            { enableHighAccuracy: true, timeout: 10000 },
+        );
+    }
 
     const loadStops = useCallback((bounds: Bounds, currentZoom: number) => {
         if (currentZoom < MIN_ZOOM) {
@@ -121,6 +156,17 @@ export default function StopsPage() {
                             zoom,
                         );
                     }}>
+                    {userLocation && (
+                        <Marker longitude={userLocation.longitude} latitude={userLocation.latitude} anchor="center">
+                            <div
+                                className="relative flex h-5 w-5 items-center justify-center"
+                                aria-label="Your location">
+                                <span className="bg-primary absolute inline-flex h-full w-full animate-ping rounded-full opacity-50" />
+                                <span className="bg-primary relative inline-flex h-3 w-3 rounded-full ring-2 ring-white" />
+                            </div>
+                        </Marker>
+                    )}
+
                     {stops.map((stop) => (
                         <Marker key={stop.id} longitude={stop.longitude} latitude={stop.latitude} anchor="center">
                             <button
@@ -204,6 +250,15 @@ export default function StopsPage() {
                 </Map>
             </div>
 
+            <button
+                type="button"
+                onClick={locateMe}
+                disabled={isLocating}
+                aria-label="Go to my location"
+                className="border-border bg-card text-foreground hover:bg-secondary absolute right-4 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-10 flex h-11 w-11 items-center justify-center rounded-full border shadow-md transition-colors disabled:opacity-50 sm:h-9 sm:w-9">
+                <LocateFixed className={`h-5 w-5 sm:h-4 sm:w-4 ${isLocating ? "animate-pulse" : ""}`} />
+            </button>
+
             <div className="absolute top-4 right-4 left-4 z-10 sm:right-auto">
                 <StopSearch
                     onSelect={(stop) => {
@@ -216,6 +271,12 @@ export default function StopsPage() {
                     }}
                 />
             </div>
+
+            {locationError && (
+                <div className="bg-destructive text-destructive-foreground absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 rounded-md px-4 py-2 text-sm shadow-md">
+                    {locationError}
+                </div>
+            )}
 
             {zoom < MIN_ZOOM && (
                 <div className="bg-card/90 text-muted-foreground border-border absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 rounded-md border px-4 py-2 text-sm shadow-md backdrop-blur-sm">
