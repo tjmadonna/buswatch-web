@@ -1,3 +1,4 @@
+import AppIcon from "@/components/app-icon";
 import { useTheme } from "@/hooks/use-theme";
 import { Map, Moon, Star, Sun } from "lucide-react";
 import { NavLink } from "react-router";
@@ -7,8 +8,12 @@ export default function NavBar() {
 
     return (
         <nav className="bg-card border-border flex h-14 shrink-0 items-center gap-1 border-b px-4">
-            <span className="text-foreground mr-4 text-xs font-bold tracking-tight sm:text-sm md:text-base">
+            <AppIcon className="text-foreground mr-1 inline-block h-7 w-7 md:mr-2" />
+            <span className="text-foreground mr-4 hidden text-base font-bold tracking-tight md:block">
                 Pittsburgh Bus Watch
+            </span>
+            <span className="text-foreground mr-4 block text-sm font-bold tracking-tight sm:text-base md:hidden">
+                Bus Watch
             </span>
             <NavLink
                 to="/"
