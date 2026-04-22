@@ -171,12 +171,28 @@ def get_trips(routes: set[str], config: Config) -> list[models.Trip]:
                 .title(),
                 name=trip_names[row["trip_id"]],
                 route_id=row["route_id"],
+                shape_id=row["shape_id"],
             )
             for row in reader
             if row["route_id"] in routes
         ]
 
     return trips
+
+
+def get_shapes(config: Config) -> list[models.Shape]:
+    filename = os.path.join(config.GTFS_PATH, "shapes.txt")
+    with open(filename, "r") as f:
+        reader = csv.DictReader(f)
+        return [
+            models.Shape(
+                id=row["shape_id"],
+                latitude=float(row["shape_pt_lat"]),
+                longitude=float(row["shape_pt_lon"]),
+                sequence=int(row["shape_pt_sequence"]),
+            )
+            for row in reader
+        ]
 
 
 def get_route_stops(trips: list[models.Trip], config: Config) -> list[models.RouteStop]:
@@ -225,12 +241,19 @@ def main():
             (stop.as_tuple() for stop in stops),
         )
         cursor.executemany(
-            "INSERT INTO trips (id, direction, destination, name, route_id) VALUES (?, ?, ?, ?, ?);",
+            (
+                "INSERT INTO trips (id, direction, destination, name, route_id, shape_id) "
+                "VALUES (?, ?, ?, ?, ?, ?);"
+            ),
             (trip.as_tuple() for trip in trips),
         )
         cursor.executemany(
             "INSERT INTO routes_stops (route_id, stop_id) VALUES (?, ?);",
             (route_stop.as_tuple() for route_stop in route_stops),
+        )
+        cursor.executemany(
+            "INSERT INTO shapes (id, latitude, longitude, sequence) VALUES (?, ?, ?, ?);",
+            (shape.as_tuple() for shape in get_shapes(config)),
         )
         conn.commit()
     except Exception as e:

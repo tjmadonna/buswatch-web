@@ -31,7 +31,18 @@ CREATE TABLE trips (
     destination TEXT NOT NULL,
     name TEXT NOT NULL,
     route_id TEXT NOT NULL,
+    shape_id TEXT NOT NULL,
     FOREIGN KEY (route_id) REFERENCES routes(id)
 );
 CREATE INDEX idx_trips_route_id ON trips (route_id);
+CREATE INDEX idx_trips_shape_id ON trips (shape_id);
 CREATE INDEX idx_trips_direction_destination_route_id ON trips (direction, destination, route_id);
+
+CREATE TABLE shapes (
+    id TEXT NOT NULL,
+    latitude FLOAT NOT NULL,
+    longitude FLOAT NOT NULL,
+    sequence INTEGER NOT NULL,
+    PRIMARY KEY (id, sequence)
+);
+CREATE INDEX idx_shapes_id ON shapes (id);

@@ -6,9 +6,7 @@ from typing import Literal
 
 class TupleConvertible:
     def as_tuple(self):
-        return tuple(
-            getattr(self, field.name) for field in self.__dataclass_fields__.values()
-        )
+        return tuple(getattr(self, field.name) for field in self.__dataclass_fields__.values())
 
 
 replacements = {
@@ -80,6 +78,7 @@ class Trip(TupleConvertible):
     destination: str
     name: str
     route_id: str
+    shape_id: str
 
     def as_tuple(self):
         return (
@@ -88,4 +87,21 @@ class Trip(TupleConvertible):
             self.destination,
             smart_title(self.name),
             self.route_id.upper(),
+            self.shape_id,
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class Shape(TupleConvertible):
+    id: str
+    latitude: float
+    longitude: float
+    sequence: int
+
+    def as_tuple(self):
+        return (
+            self.id,
+            self.latitude,
+            self.longitude,
+            self.sequence,
         )
