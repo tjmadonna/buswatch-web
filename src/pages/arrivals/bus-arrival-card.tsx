@@ -16,13 +16,20 @@ function formatArrival(minutes: number): string {
 
 interface BusArrivalCardProps {
     arrivalTime: Date;
+    currentTime: Date;
     occupancy: OccupancyLevel;
     routeID: string;
     tripName: string;
 }
 
-export default function BusArrivalCard({ arrivalTime, occupancy, routeID, tripName }: BusArrivalCardProps) {
-    const arrivalMinutes = Math.round((arrivalTime.getTime() - new Date().getTime()) / 60000);
+export default function BusArrivalCard({
+    arrivalTime,
+    currentTime,
+    occupancy,
+    routeID,
+    tripName,
+}: BusArrivalCardProps) {
+    const arrivalMinutes = Math.round((arrivalTime.getTime() - currentTime.getTime()) / 60000);
 
     return (
         <div className="border-border bg-card hover:bg-secondary/50 flex items-center gap-4 rounded-lg border p-4 transition-colors">

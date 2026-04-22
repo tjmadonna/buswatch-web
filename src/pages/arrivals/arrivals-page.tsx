@@ -9,6 +9,7 @@ import NoArrivals from "@/pages/arrivals/no-arrivals";
 import { parseOccupancy } from "@/pages/arrivals/occupancy";
 import { RouteFilter } from "@/pages/arrivals/route-filter";
 import { REFRESH_INTERVAL, useArrivalsData } from "@/pages/arrivals/use-arrivals-data";
+import { useTimer } from "@/pages/arrivals/use-timer";
 import { RefreshCw, SearchX, ServerCrash } from "lucide-react";
 import { useParams } from "react-router";
 import * as z from "zod/mini";
@@ -17,6 +18,7 @@ export default function ArrivalsPage() {
     const params = useParams<{ stopID: string }>();
     const [hiddenRoutes, setHiddenRoutes] = useLocalStorage(`hiddenRoutes:${params.stopID}`, z.array(z.string()), []);
     const { arrivals, error, isLoading, isRefreshing, lastUpdated, refresh, stop } = useArrivalsData(params.stopID);
+    const { currentTime } = useTimer();
     const showSkeleton = useDelayedLoading(isLoading);
 
     if (!stop) {
@@ -89,6 +91,7 @@ export default function ArrivalsPage() {
                             <BusArrivalCard
                                 key={arrival.vehicleID}
                                 arrivalTime={arrival.arrivalTime}
+                                currentTime={currentTime}
                                 occupancy={parseOccupancy(arrival.occupancy)}
                                 routeID={arrival.routeID}
                                 tripName={arrival.tripName}
