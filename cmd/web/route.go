@@ -24,6 +24,7 @@ func createRoutes(app *application.Application) http.Handler {
 	mux.Handle("GET /api/v1/stops", app.WrapAPIMiddleware(handler.GetStopsHandler(app)))
 	mux.Handle("GET /api/v1/stops/{id}", app.WrapAPIMiddleware(handler.GetStopHandler(app)))
 	mux.Handle("GET /api/v1/stops/{id}/arrivals", app.WrapAPIMiddleware(handler.GetArrivalsHandler(app)))
+	mux.Handle("GET /api/v1/routes/{id}/shapes", app.WrapAPIMiddleware(handler.GetRouteShapesHandler(app)))
 	mux.Handle("GET /api/", app.WrapAPIMiddleware(handler.GetNotFoundHandler(app)))
 
 	if app.Environment == application.Production {
