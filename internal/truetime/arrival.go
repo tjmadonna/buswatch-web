@@ -51,6 +51,7 @@ func (c *Client) fetchArrivalsForFeed(stopID, feed string) ([]TrueTimeArrival, e
 	baseURL := c.baseURL + "/getpredictions"
 	params := url.Values{
 		"format":       {"json"},
+		"tmres":        {"s"},
 		"key":          {c.apiKey},
 		"stpid":        {stopID},
 		"rtpidatafeed": {feed},

@@ -112,7 +112,7 @@ func createKey(direction, destination, routeID string) string {
 
 func parseArrivalTime(timeStr string, loc *time.Location) (string, error) {
 	// Parse the time string in the specified format
-	parsedTime, err := time.ParseInLocation("20060102 15:04", timeStr, loc)
+	parsedTime, err := time.ParseInLocation("20060102 15:04:05", timeStr, loc)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse time: %w", err)
 	}
