@@ -52,6 +52,9 @@ func GetArrivalsHandler(app *application.Application) http.HandlerFunc {
 		tripInfoMap := make(map[string]database.GetTripsByInfoItem)
 		for _, pred := range trueTimeArrivals {
 			key := createKey(pred.Direction, pred.Destination, pred.RouteID)
+			if _, exists := tripInfoMap[key]; exists {
+				continue
+			}
 			tripInfoMap[key] = database.GetTripsByInfoItem{
 				Direction:   pred.Direction,
 				Destination: pred.Destination,
