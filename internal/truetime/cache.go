@@ -5,10 +5,19 @@ import (
 	"time"
 )
 
-// newArrivalCache creates a new cache with automatic cleanup
-func newArrivalCache(cleanupInterval, expiry time.Duration) *arrivalCache {
-	cache := &arrivalCache{
-		arrivals:      make(map[string]cachedArrivals),
+type cachedItem[T any] struct {
+	data      T
+	timestamp time.Time
+}
+
+func (c *cachedItem[T]) isExpired(duration time.Duration) bool {
+	return time.Since(c.timestamp) > duration
+}
+
+// newCache creates a new cache with automatic cleanup
+func newCache[T any](cleanupInterval, expiry time.Duration) *cache[T] {
+	cache := &cache[T]{
+		data:          make(map[string]cachedItem[T]),
 		cleanupTicker: time.NewTicker(cleanupInterval),
 		expiry:        expiry,
 		done:          make(chan struct{}),
@@ -20,70 +29,29 @@ func newArrivalCache(cleanupInterval, expiry time.Duration) *arrivalCache {
 	return cache
 }
 
-type arrivalCache struct {
+type cache[T any] struct {
 	mu            sync.RWMutex
-	arrivals      map[string]cachedArrivals
+	data          map[string]cachedItem[T]
 	cleanupTicker *time.Ticker
 	expiry        time.Duration
 	done          chan struct{}
 }
 
-type cachedArrivals struct {
-	data      []TrueTimeArrival
-	timestamp time.Time
-}
-
-// isExpired checks if the cached data is expired
-func (c *cachedArrivals) isExpired(duration time.Duration) bool {
-	return time.Since(c.timestamp) > duration
-}
-
-// getCachedArrivals retrieves arrivals from cache if valid
-func (c *Client) getCachedArrivals(stopID string) ([]TrueTimeArrival, bool) {
-	c.arrivalCache.mu.RLock()
-	defer c.arrivalCache.mu.RUnlock()
-
-	cached, exists := c.arrivalCache.arrivals[stopID]
-	if !exists || cached.isExpired(c.cacheDuration) {
-		return nil, false
-	}
-
-	// return a copy to prevent mutation
-	arrivals := make([]TrueTimeArrival, len(cached.data))
-	copy(arrivals, cached.data)
-	return arrivals, true
-}
-
-// setCachedArrivals stores arrivals in cache
-func (c *Client) setCachedArrivals(stopID string, arrivals []TrueTimeArrival) {
-	c.arrivalCache.mu.Lock()
-	defer c.arrivalCache.mu.Unlock()
-
-	// store a copy to prevent external mutation
-	cachedData := make([]TrueTimeArrival, len(arrivals))
-	copy(cachedData, arrivals)
-
-	c.arrivalCache.arrivals[stopID] = cachedArrivals{
-		data:      cachedData,
-		timestamp: time.Now(),
-	}
-}
-
 // cleanExpired removes expired entries from cache
-func (pc *arrivalCache) cleanExpired() {
+func (pc *cache[T]) cleanExpired() {
 	pc.mu.Lock()
 	defer pc.mu.Unlock()
 
 	// remove entries
-	for stopID, cached := range pc.arrivals {
+	for key, cached := range pc.data {
 		if time.Since(cached.timestamp) > pc.expiry {
-			delete(pc.arrivals, stopID)
+			delete(pc.data, key)
 		}
 	}
 }
 
 // startCleanupTimer runs the cleanup process at regular intervals
-func (pc *arrivalCache) startCleanupTimer() {
+func (pc *cache[T]) startCleanupTimer() {
 	for {
 		select {
 		case <-pc.cleanupTicker.C:
@@ -96,6 +64,6 @@ func (pc *arrivalCache) startCleanupTimer() {
 }
 
 // Close stops the cleanup timer and closes the cache
-func (pc *arrivalCache) Close() {
+func (pc *cache[T]) Close() {
 	close(pc.done)
 }

@@ -2,10 +2,10 @@ package truetime
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"io"
 	"net/http"
-	"strings"
+	"net/url"
 )
 
 type VehiclesBusTimeResponse struct {
@@ -14,51 +14,69 @@ type VehiclesBusTimeResponse struct {
 }
 
 type TrueTimeVehicle struct {
-	ID        string `json:"vid"`
-	Occupancy string `json:"psgld"`
+	ID          string `json:"vid"`
+	Destination string `json:"des"`
+	Direction   string `json:"rtdir"`
+	Latitude    string `json:"lat"`
+	Longitude   string `json:"lon"`
+	Occupancy   string `json:"psgld"`
+	RouteID     string `json:"rt"`
 }
 
-func (c *Client) GetVehicles(ids ...string) ([]TrueTimeVehicle, error) {
-	userAgent := c.userAgent
-
-	vids := strings.Join(ids, ",")
-	url := c.baseURL + "/getvehicles?format=json&key=" + c.apiKey + "&vid=" + vids
-	req, err := http.NewRequest("GET", url, nil)
-	req.Header.Set("User-Agent", userAgent)
-	if err != nil {
-		return nil, err
+func (c *Client) GetVehicles(routeID string) ([]TrueTimeVehicle, error) {
+	cacheKey := routeID
+	if cachedArrivals, found := c.getCachedVehicles(cacheKey); found {
+		return cachedArrivals, nil
 	}
+
+	// fetch vehicles
+	vehicles, err := c.fetchVehicles(routeID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch vehicles: %w", err)
+	}
+
+	// cache the results
+	c.setCachedVehicles(cacheKey, vehicles)
+
+	return vehicles, nil
+}
+
+func (c *Client) fetchVehicles(routeID string) ([]TrueTimeVehicle, error) {
+	baseURL := c.baseURL + "/getvehicles"
+	params := url.Values{
+		"format": {"json"},
+		"key":    {c.apiKey},
+		"rt":     {routeID},
+	}
+	requestURL := baseURL + "?" + params.Encode()
+
+	req, err := http.NewRequest("GET", requestURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+	req.Header.Set("User-Agent", c.userAgent)
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to make request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New("failed to fetch vehicles: " + resp.Status)
+		return nil, fmt.Errorf("API returned status %d: %s", resp.StatusCode, resp.Status)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
 	var response TrueTimeResponse[VehiclesBusTimeResponse]
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		return nil, err
+	if err := json.Unmarshal(body, &response); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
 	}
-
-	if len(response.BusTimeResponse.Errors) > 0 {
-		msg := ""
-		for idx, e := range response.BusTimeResponse.Errors {
-			msg += e["vid"] + " - " + e["msg"]
-			if idx < len(response.BusTimeResponse.Errors)-1 {
-				msg += ", "
-			}
-		}
-		return nil, errors.New("truetime api error: " + msg)
+	if err := c.handleAPIErrors(response.BusTimeResponse.Errors); err != nil {
+		return nil, err
 	}
 
 	return response.BusTimeResponse.Vehicles, nil
