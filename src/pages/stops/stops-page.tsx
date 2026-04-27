@@ -2,6 +2,7 @@ import { APIError } from "@/data";
 import { fetchStopsByBounds, type Bounds, type Stop } from "@/data/stops";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useTheme } from "@/hooks/use-theme";
+import { useUserLocation } from "@/hooks/use-user-location";
 import StopSearch from "@/pages/stops/stop-search";
 import { cls, isAbortError } from "@/utils";
 import { ArrowRight, Bus, LocateFixed, X } from "lucide-react";
@@ -31,52 +32,18 @@ export default function StopsPage() {
     const navigate = useNavigate();
     const { theme } = useTheme();
     const [savedState, setSavedState] = useLocalStorage("stopsPageState", mapStateSchema, DEFAULT_STATE);
+    const { userLocation, isLocating, locationError, locateUser } = useUserLocation();
 
-    const [stops, setStops] = useState<Stop[]>([]);
     const [error, setError] = useState<APIError | null>(null);
     const [selectedStop, setSelectedStop] = useState<Stop | null>(null);
+    const [stops, setStops] = useState<Stop[]>([]);
     const [zoom, setZoom] = useState<number>(savedState.zoom);
-    const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
-    const [isLocating, setIsLocating] = useState(false);
-    const [locationError, setLocationError] = useState<string | null>(null);
 
     const abortControllerRef = useRef<AbortController | null>(null);
     const debounceTimerRef = useRef<number | null>(null);
     const mapRef = useRef<MapRef | null>(null);
 
     const mapStyle = theme === "dark" ? MAP_STYLE_DARK : MAP_STYLE_LIGHT;
-
-    function locateMe() {
-        if (!navigator.geolocation) {
-            setLocationError("Geolocation is not supported by your browser");
-            return;
-        }
-        setIsLocating(true);
-        setLocationError(null);
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                const { latitude, longitude } = pos.coords;
-                setUserLocation({ latitude, longitude });
-                setIsLocating(false);
-                mapRef.current?.getMap().easeTo({
-                    center: [longitude, latitude],
-                    zoom: Math.max(mapRef.current.getMap().getZoom(), MIN_ZOOM),
-                    duration: 800,
-                    essential: true,
-                });
-            },
-            (err) => {
-                setIsLocating(false);
-                if (err.code === GeolocationPositionError.PERMISSION_DENIED) {
-                    setLocationError("Location access denied");
-                } else {
-                    setLocationError("Unable to get your location");
-                }
-                setTimeout(() => setLocationError(null), 4000);
-            },
-            { enableHighAccuracy: true, timeout: 10000 },
-        );
-    }
 
     const loadStops = useCallback((bounds: Bounds, currentZoom: number) => {
         if (currentZoom < MIN_ZOOM) {
@@ -117,6 +84,17 @@ export default function StopsPage() {
             }
         };
     }, []);
+
+    useEffect(() => {
+        if (userLocation && mapRef.current) {
+            mapRef.current.getMap().easeTo({
+                center: [userLocation.longitude, userLocation.latitude],
+                zoom: Math.max(mapRef.current.getMap().getZoom(), MIN_ZOOM),
+                duration: 800,
+                essential: true,
+            });
+        }
+    }, [userLocation]);
 
     return (
         <div className="relative h-full w-full">
@@ -252,7 +230,7 @@ export default function StopsPage() {
 
             <button
                 type="button"
-                onClick={locateMe}
+                onClick={locateUser}
                 disabled={isLocating}
                 aria-label="Go to my location"
                 className="border-border bg-card text-foreground hover:bg-secondary absolute right-4 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-10 flex h-11 w-11 items-center justify-center rounded-full border shadow-md transition-colors disabled:opacity-50 sm:h-9 sm:w-9">
