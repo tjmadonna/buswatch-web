@@ -1,16 +1,14 @@
 package database
 
-import (
-	"context"
-)
+import "context"
 
-type GetShapeByRouteIDResult struct {
+type GetRoutePathPointsByRouteIDResult struct {
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
 	Sequence  int     `json:"sequence"`
 }
 
-func (d *Database) GetShapesByRouteID(routeID string, ctx context.Context) ([]GetShapeByRouteIDResult, error) {
+func (d *Database) GetRoutePathPointsByRouteID(routeID string, ctx context.Context) ([]GetRoutePathPointsByRouteIDResult, error) {
 	query := `
 		SELECT s.latitude, s.longitude, s.sequence
 		FROM shapes AS s
@@ -24,17 +22,17 @@ func (d *Database) GetShapesByRouteID(routeID string, ctx context.Context) ([]Ge
 	}
 	defer rows.Close()
 
-	var shapes []GetShapeByRouteIDResult
+	var pathPoints []GetRoutePathPointsByRouteIDResult
 	for rows.Next() {
-		var shape GetShapeByRouteIDResult
-		if err := rows.Scan(&shape.Latitude, &shape.Longitude, &shape.Sequence); err != nil {
+		var pathPoint GetRoutePathPointsByRouteIDResult
+		if err := rows.Scan(&pathPoint.Latitude, &pathPoint.Longitude, &pathPoint.Sequence); err != nil {
 			return nil, err
 		}
-		shapes = append(shapes, shape)
+		pathPoints = append(pathPoints, pathPoint)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-	return shapes, nil
+	return pathPoints, nil
 }
