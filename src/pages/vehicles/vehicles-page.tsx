@@ -144,10 +144,10 @@ export default function VehiclesPage() {
             </div>
 
             {showLabel && (
-                <div className="border-border bg-card text-foreground absolute top-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 rounded-full border px-4 py-2 shadow-md">
+                <div className="border-border bg-card text-foreground absolute top-4 left-1/2 z-10 flex w-max max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center rounded-full border px-4 py-2 shadow-md">
                     <span className="text-sm font-semibold">Route {params.routeID}</span>
                     {navState.success && (
-                        <span className="text-muted-foreground text-sm before:mx-2 before:content-['·']">
+                        <span className="text-muted-foreground ml-0 text-sm before:mx-2 before:content-['·']">
                             {navState.data.stopName}
                         </span>
                     )}
@@ -155,7 +155,7 @@ export default function VehiclesPage() {
                         type="button"
                         onClick={() => setShowLabel(false)}
                         aria-label="Dismiss"
-                        className="text-muted-foreground hover:text-foreground -mr-1 ml-1 rounded-full p-0.5 transition-colors focus:outline-none">
+                        className="text-muted-foreground hover:text-foreground -mr-1 ml-4 rounded-full p-0.5 transition-colors focus:outline-none">
                         <X className="h-3.5 w-3.5" />
                     </button>
                 </div>
