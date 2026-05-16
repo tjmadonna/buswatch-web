@@ -17,6 +17,7 @@ type TrueTimeVehicle struct {
 	ID          string `json:"vid"`
 	Destination string `json:"des"`
 	Direction   string `json:"rtdir"`
+	Heading     string `json:"hdg"`
 	Latitude    string `json:"lat"`
 	Longitude   string `json:"lon"`
 	Occupancy   string `json:"psgld"`

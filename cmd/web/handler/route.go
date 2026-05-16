@@ -53,6 +53,7 @@ type Vehicle struct {
 	TripName  string  `json:"tripName"`
 	Direction string  `json:"direction"`
 	RouteID   string  `json:"routeID"`
+	Heading   int64   `json:"heading"`
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
 	Occupancy int     `json:"occupancy"`
@@ -128,6 +129,12 @@ func GetRouteVehiclesHandler(app *application.Application) http.HandlerFunc {
 			key := createKey(v.Direction, v.Destination, v.RouteID)
 			tripName := tripNameMap[key]
 
+			heading, err := strconv.ParseInt(v.Heading, 10, 64)
+			if err != nil {
+				app.WriteInternalServerErrorResponse(w, r, err)
+				return
+			}
+
 			lat, err := strconv.ParseFloat(v.Latitude, 64)
 			if err != nil {
 				app.WriteInternalServerErrorResponse(w, r, err)
@@ -144,6 +151,7 @@ func GetRouteVehiclesHandler(app *application.Application) http.HandlerFunc {
 				TripName:  tripName,
 				Direction: caser.String(v.Direction),
 				RouteID:   strings.ToUpper(v.RouteID),
+				Heading:   heading,
 				Latitude:  lat,
 				Longitude: lon,
 				Occupancy: parseOccupancy(v.Occupancy),
