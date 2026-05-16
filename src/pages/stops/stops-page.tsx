@@ -5,7 +5,7 @@ import { useTheme } from "@/hooks/use-theme";
 import { useUserLocation } from "@/hooks/use-user-location";
 import StopSearch from "@/pages/stops/stop-search";
 import { cls, isAbortError } from "@/utils";
-import { ArrowRight, Bus, LocateFixed, MapPin, X } from "lucide-react";
+import { ArrowRight, BusFront, LocateFixed, MapPin, X } from "lucide-react";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Map, Marker, Popup, type MapRef } from "react-map-gl/maplibre";
@@ -168,7 +168,7 @@ export default function StopsPage() {
                                 )}>
                                 <div className="relative">
                                     <MapPin className="h-10 w-10 fill-current stroke-none [&_circle]:hidden" />
-                                    <Bus className="stroke-primary-foreground absolute top-2 left-1/2 h-5 w-5 -translate-x-1/2" />
+                                    <BusFront className="stroke-primary-foreground absolute top-2 left-1/2 h-5 w-5 -translate-x-1/2" />
                                 </div>
                             </button>
                         </Marker>

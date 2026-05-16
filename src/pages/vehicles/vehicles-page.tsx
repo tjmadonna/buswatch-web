@@ -1,7 +1,7 @@
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useTheme } from "@/hooks/use-theme";
 import { useUserLocation } from "@/hooks/use-user-location";
-import { Bus, ChevronUp, LocateFixed, MapPin } from "lucide-react";
+import { Bus, BusFront, ChevronUp, LocateFixed, MapPin } from "lucide-react";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useMemo, useRef } from "react";
 import { Layer, Map, Marker, Source, type MapRef } from "react-map-gl/maplibre";
@@ -87,7 +87,7 @@ export default function VehiclesPage() {
                             <div className="text-primary drop-shadow-md" aria-label="Bus stop">
                                 <div className="relative">
                                     <MapPin className="h-10 w-10 fill-current stroke-none [&_circle]:hidden" />
-                                    <Bus className="stroke-primary-foreground absolute top-2 left-1/2 h-5 w-5 -translate-x-1/2" />
+                                    <BusFront className="stroke-primary-foreground absolute top-2 left-1/2 h-5 w-5 -translate-x-1/2" />
                                 </div>
                             </div>
                         </Marker>
