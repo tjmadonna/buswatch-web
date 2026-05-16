@@ -1,5 +1,6 @@
 import { type OccupancyLevel } from "@/pages/arrivals/occupancy";
 import { Bus, Clock, Users } from "lucide-react";
+import { Link } from "react-router";
 
 const occupancyConfig: Record<OccupancyLevel, { label: string; class: string; bars: number }> = {
     low: { label: "Seats available", class: "bg-occupancy-low", bars: 1 },
@@ -19,6 +20,9 @@ interface BusArrivalCardProps {
     currentTime: Date;
     occupancy: OccupancyLevel;
     routeID: string;
+    stopLatitude: number;
+    stopLongitude: number;
+    stopName: string;
     tripName: string;
 }
 
@@ -27,12 +31,18 @@ export default function BusArrivalCard({
     currentTime,
     occupancy,
     routeID,
+    stopLatitude,
+    stopLongitude,
+    stopName,
     tripName,
 }: BusArrivalCardProps) {
     const arrivalMinutes = Math.round((arrivalTime.getTime() - currentTime.getTime()) / 60000);
 
     return (
-        <div className="border-border bg-card hover:bg-secondary/50 flex items-center gap-4 rounded-lg border p-4 transition-colors">
+        <Link
+            to={`/routes/${encodeURIComponent(routeID)}/vehicles`}
+            state={{ latitude: stopLatitude, longitude: stopLongitude, stopName }}
+            className="border-border bg-card hover:bg-secondary/50 flex items-center gap-4 rounded-lg border p-4 transition-colors">
             <div className="text-primary-foreground bg-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-lg font-bold">
                 <span className="text-lg">{routeID}</span>
             </div>
@@ -62,7 +72,7 @@ export default function BusArrivalCard({
                     </span>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 }
 

@@ -5,7 +5,7 @@ import { useTheme } from "@/hooks/use-theme";
 import { useUserLocation } from "@/hooks/use-user-location";
 import StopSearch from "@/pages/stops/stop-search";
 import { cls, isAbortError } from "@/utils";
-import { ArrowRight, Bus, LocateFixed, X } from "lucide-react";
+import { ArrowRight, Bus, LocateFixed, MapPin, X } from "lucide-react";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Map, Marker, Popup, type MapRef } from "react-map-gl/maplibre";
@@ -146,7 +146,7 @@ export default function StopsPage() {
                     )}
 
                     {stops.map((stop) => (
-                        <Marker key={stop.id} longitude={stop.longitude} latitude={stop.latitude} anchor="center">
+                        <Marker key={stop.id} longitude={stop.longitude} latitude={stop.latitude} anchor="bottom">
                             <button
                                 type="button"
                                 aria-label={stop.name}
@@ -163,12 +163,13 @@ export default function StopsPage() {
                                     }, 0);
                                 }}
                                 className={cls(
-                                    "flex h-10 w-10 cursor-pointer items-center justify-center rounded-full shadow-md transition-transform hover:scale-110 focus:outline-none sm:h-8 sm:w-8",
-                                    selectedStop?.id === stop.id
-                                        ? "bg-primary/80 text-primary-foreground scale-110"
-                                        : "bg-primary text-primary-foreground hover:bg-primary/80",
+                                    "cursor-pointer drop-shadow-md transition-transform hover:scale-110 focus:outline-none",
+                                    selectedStop?.id === stop.id ? "text-primary/80 scale-110" : "text-primary",
                                 )}>
-                                <Bus className="h-5 w-5 sm:h-4 sm:w-4" />
+                                <div className="relative">
+                                    <MapPin className="h-10 w-10 fill-current stroke-none [&_circle]:hidden" />
+                                    <Bus className="stroke-primary-foreground absolute top-2 left-1/2 h-5 w-5 -translate-x-1/2" />
+                                </div>
                             </button>
                         </Marker>
                     ))}
@@ -178,7 +179,7 @@ export default function StopsPage() {
                             longitude={selectedStop.longitude}
                             latitude={selectedStop.latitude}
                             anchor="bottom"
-                            offset={20}
+                            offset={50}
                             closeButton={false}
                             onClose={() => setSelectedStop(null)}
                             className="[&_.maplibregl-popup-tip]:border-t-card [&_.maplibregl-popup-content]:bg-card [&_.maplibregl-popup-content]:rounded-lg [&_.maplibregl-popup-content]:border-0 [&_.maplibregl-popup-content]:p-0 [&_.maplibregl-popup-content]:shadow-lg">

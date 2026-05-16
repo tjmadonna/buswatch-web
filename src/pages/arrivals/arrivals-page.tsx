@@ -94,6 +94,9 @@ export default function ArrivalsPage() {
                                 currentTime={currentTime}
                                 occupancy={parseOccupancy(arrival.occupancy)}
                                 routeID={arrival.routeID}
+                                stopLatitude={stop.latitude}
+                                stopLongitude={stop.longitude}
+                                stopName={stop.name}
                                 tripName={arrival.tripName}
                             />
                         ))}

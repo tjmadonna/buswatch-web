@@ -3,6 +3,7 @@ import ArrivalsPage from "@/pages/arrivals/arrivals-page";
 import HomePage from "@/pages/home/home-page";
 import NotFoundPage from "@/pages/not-found/not-found-page";
 import StopsPage from "@/pages/stops/stops-page";
+import VehiclesPage from "@/pages/vehicles/vehicles-page";
 import "@/style.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
@@ -21,6 +22,7 @@ createRoot(root).render(
                     <Route path="/" element={<HomePage />} />
                     <Route path="/stops" element={<StopsPage />} />
                     <Route path="/stops/:stopID/arrivals" element={<ArrivalsPage />} />
+                    <Route path="/routes/:routeID/vehicles" element={<VehiclesPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                 </Route>
             </Routes>
