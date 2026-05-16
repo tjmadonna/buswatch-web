@@ -15,7 +15,7 @@ RUN --mount=type=secret,id=build_secrets \
 RUN chmod 444 /data/database.db
 
 # Build the React UI stage
-FROM --platform=$BUILDPLATFORM node:24.14-alpine3.23 AS ui_builder
+FROM --platform=$BUILDPLATFORM node:24-alpine3.23 AS ui_builder
 
 RUN apk -U upgrade
 
