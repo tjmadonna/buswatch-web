@@ -9,14 +9,14 @@ interface FavoriteStopCardProps {
 
 export default function FavoriteStopCard({ stop }: FavoriteStopCardProps) {
     return (
-        <div className="bg-card border-border flex flex-col gap-3 rounded-xl border p-4 transition-shadow hover:shadow-md">
+        <div className="bg-card border-border hover:bg-secondary/50 flex flex-col gap-3 rounded-xl border p-4 transition-colors">
             <div className="flex items-start justify-between gap-2">
                 <Link to={`/stops/${stop.id}/arrivals`} className="group flex min-w-0 flex-1 items-center gap-3">
                     <div className="bg-primary/15 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
                         <MapPin className="text-primary h-5 w-5" />
                     </div>
                     <div className="flex flex-col gap-0.5 overflow-hidden">
-                        <span className="text-foreground group-hover:text-primary truncate text-base font-semibold transition-colors">
+                        <span className="text-foreground truncate text-base font-semibold transition-colors">
                             {stop.name}
                         </span>
                         <span className="text-muted-foreground text-sm">Stop #{stop.id}</span>
