@@ -1,7 +1,7 @@
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useTheme } from "@/hooks/use-theme";
 import { useUserLocation } from "@/hooks/use-user-location";
-import { Bus, LocateFixed, MapPin } from "lucide-react";
+import { Bus, ChevronUp, LocateFixed, MapPin } from "lucide-react";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useMemo, useRef } from "react";
 import { Layer, Map, Marker, Source, type MapRef } from "react-map-gl/maplibre";
@@ -108,10 +108,17 @@ export default function VehiclesPage() {
                             longitude={vehicle.longitude}
                             latitude={vehicle.latitude}
                             anchor="center">
-                            <div
-                                className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full shadow-md ring-2 ring-white"
-                                aria-label={`Bus ${vehicle.tripName}`}>
-                                <Bus className="h-4 w-4" />
+                            <div className="relative h-8 w-8" style={{ transform: `rotate(${vehicle.heading}deg)` }}>
+                                <ChevronUp
+                                    className="text-foreground absolute -top-6 left-1/2 h-8 w-8 -translate-x-1/2 drop-shadow-sm"
+                                    style={{ strokeWidth: 3.5 }}
+                                />
+                                <div
+                                    className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full shadow-md"
+                                    style={{ transform: `rotate(${-vehicle.heading}deg)` }}
+                                    aria-label={`Bus ${vehicle.tripName}`}>
+                                    <Bus className="h-5 w-5" />
+                                </div>
                             </div>
                         </Marker>
                     ))}

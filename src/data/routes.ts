@@ -6,6 +6,7 @@ const vehicleSchema = z.object({
     tripName: z.string(),
     direction: z.enum(["Inbound", "Outbound"]),
     routeID: z.string(),
+    heading: z.number(),
     latitude: z.number(),
     longitude: z.number(),
     occupancy: z.union([z.literal(-1), z.literal(0), z.literal(1), z.literal(2)]),
