@@ -1,9 +1,9 @@
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useTheme } from "@/hooks/use-theme";
 import { useUserLocation } from "@/hooks/use-user-location";
-import { Bus, BusFront, ChevronUp, LocateFixed, MapPin } from "lucide-react";
+import { Bus, BusFront, ChevronUp, LocateFixed, MapPin, X } from "lucide-react";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Layer, Map, Marker, Source, type MapRef } from "react-map-gl/maplibre";
 import { useLocation, useParams } from "react-router";
 import * as z from "zod/mini";
@@ -44,6 +44,7 @@ export default function VehiclesPage() {
         : savedState;
 
     const mapRef = useRef<MapRef | null>(null);
+    const [showLabel, setShowLabel] = useState(true);
 
     const mapStyle = theme === "dark" ? MAP_STYLE_DARK : MAP_STYLE_LIGHT;
 
@@ -142,14 +143,23 @@ export default function VehiclesPage() {
                 </Map>
             </div>
 
-            <div className="border-border bg-card text-foreground absolute top-4 left-1/2 z-10 -translate-x-1/2 rounded-full border px-4 py-2 shadow-md">
-                <span className="text-sm font-semibold">Route {params.routeID}</span>
-                {navState.success && (
-                    <span className="text-muted-foreground text-sm before:mx-2 before:content-['·']">
-                        {navState.data.stopName}
-                    </span>
-                )}
-            </div>
+            {showLabel && (
+                <div className="border-border bg-card text-foreground absolute top-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 rounded-full border px-4 py-2 shadow-md">
+                    <span className="text-sm font-semibold">Route {params.routeID}</span>
+                    {navState.success && (
+                        <span className="text-muted-foreground text-sm before:mx-2 before:content-['·']">
+                            {navState.data.stopName}
+                        </span>
+                    )}
+                    <button
+                        type="button"
+                        onClick={() => setShowLabel(false)}
+                        aria-label="Dismiss"
+                        className="text-muted-foreground hover:text-foreground -mr-1 ml-1 rounded-full p-0.5 transition-colors focus:outline-none">
+                        <X className="h-3.5 w-3.5" />
+                    </button>
+                </div>
+            )}
 
             <button
                 type="button"
