@@ -8,6 +8,7 @@ import { Layer, Map, Marker, Source, type MapRef } from "react-map-gl/maplibre";
 import { useLocation, useParams } from "react-router";
 import * as z from "zod/mini";
 import { useShapesData } from "./use-vehicles-data";
+import { routeColors } from "@/utils/color";
 
 const MAP_STYLE_LIGHT = "/positron.json";
 const MAP_STYLE_DARK = "/dark.json";
@@ -47,6 +48,7 @@ export default function VehiclesPage() {
     const [showLabel, setShowLabel] = useState(true);
 
     const mapStyle = theme === "dark" ? MAP_STYLE_DARK : MAP_STYLE_LIGHT;
+    const routeID = params.routeID ?? "";
 
     const routeGeoJSON = useMemo<GeoJSON.Feature<GeoJSON.LineString> | null>(() => {
         if (!path) return null;
@@ -129,7 +131,7 @@ export default function VehiclesPage() {
                                 id="route-path-line"
                                 type="line"
                                 paint={{
-                                    "line-color": theme === "dark" ? "#FAC905" : "#E8B800",
+                                    "line-color": routeColors[routeID] ?? "var(--color-primary)",
                                     "line-width": 4,
                                     "line-opacity": 0.85,
                                 }}

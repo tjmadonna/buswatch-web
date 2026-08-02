@@ -1,4 +1,5 @@
 import { type OccupancyLevel } from "@/pages/arrivals/occupancy";
+import { routeColors } from "@/utils/color";
 import { Bus, Clock, Users } from "lucide-react";
 import { Link } from "react-router";
 
@@ -43,7 +44,9 @@ export default function BusArrivalCard({
             to={`/routes/${encodeURIComponent(routeID)}/vehicles`}
             state={{ latitude: stopLatitude, longitude: stopLongitude, stopName }}
             className="border-border bg-card hover:bg-secondary/50 flex items-center gap-4 rounded-lg border p-4 transition-colors">
-            <div className="text-primary-foreground bg-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-lg font-bold">
+            <div
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg font-bold text-white"
+                style={{ backgroundColor: routeColors[routeID] ?? "var(--color-primary)" }}>
                 <span className="text-lg">{routeID}</span>
             </div>
 
