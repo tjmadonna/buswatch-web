@@ -24,7 +24,7 @@ function compressBuildAssets(): Plugin {
         name: "compress-build-assets",
         apply: "build",
         enforce: "post",
-        writeBundle(_, bundle) {
+        generateBundle(_, bundle) {
             for (const output of Object.values(bundle)) {
                 const sourceBuffer =
                     output.type === "chunk"
