@@ -2,6 +2,7 @@ import { ServerCrash, Star } from "lucide-react";
 import { Link } from "react-router";
 import * as z from "zod/mini";
 
+import SEO from "@/components/seo";
 import { useDelayedLoading } from "@/hooks/use-delayed-loading";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import FavoriteStopCard from "@/pages/home/favorite-stop-card";
@@ -32,6 +33,7 @@ export default function HomePage() {
 
     return (
         <main className="mx-auto max-w-xl px-4 py-6">
+            <SEO title="Live Pittsburgh Bus Times" />
             <h1 className="text-foreground mb-6 text-2xl font-bold">Favorite Stops</h1>
 
             {dataState == "loading" && showSkeleton && <FavoriteStopsSkeleton />}

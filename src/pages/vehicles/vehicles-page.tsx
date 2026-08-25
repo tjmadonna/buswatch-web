@@ -6,6 +6,7 @@ import { Layer, Map, type MapRef, Marker, Source } from "react-map-gl/maplibre";
 import { useLocation, useParams } from "react-router";
 import * as z from "zod/mini";
 
+import SEO from "@/components/seo";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useTheme } from "@/hooks/use-theme";
 import { useUserLocation } from "@/hooks/use-user-location";
@@ -78,6 +79,7 @@ export default function VehiclesPage() {
 
     return (
         <div className="relative h-full w-full">
+            <SEO title={`Route ${routeID} Live Vehicles`} noIndex />
             <div className="absolute inset-0 [&>div]:h-full [&>div]:w-full">
                 <Map
                     ref={mapRef}

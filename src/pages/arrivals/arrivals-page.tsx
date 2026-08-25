@@ -4,6 +4,7 @@ import * as z from "zod/mini";
 
 import Error from "@/components/error";
 import { FavoriteToggle } from "@/components/favorite-toggle";
+import SEO from "@/components/seo";
 import { useDelayedLoading } from "@/hooks/use-delayed-loading";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import BusArrivalCard from "@/pages/arrivals/bus-arrival-card";
@@ -49,6 +50,10 @@ export default function ArrivalsPage() {
 
     return (
         <main className="mx-auto min-h-screen max-w-xl px-4 py-6">
+            <SEO
+                title={`${stop.name} Bus Arrivals`}
+                description={`See live Pittsburgh bus arrival times for ${stop.name}, including routes ${stop.routeIDs.join(", ")}.`}
+            />
             <div className="flex items-start justify-between gap-2">
                 <div className="flex-1">
                     <BusStopHeader routes={stop.routeIDs} stopID={stop.id} stopName={stop.name} />
