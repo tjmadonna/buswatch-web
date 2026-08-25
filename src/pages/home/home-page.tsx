@@ -1,11 +1,12 @@
-import { useLocalStorage } from "@/hooks/use-local-storage";
-import { useDelayedLoading } from "@/hooks/use-delayed-loading";
-import FavoriteStopCard from "@/pages/home/favorite-stop-card";
-import FavoriteStopsSkeleton from "@/pages/home/favorite-stops-skeleton";
-import { useFavoriteStopsData } from "@/pages/home/use-favorite-stops-data";
 import { ServerCrash, Star } from "lucide-react";
 import { Link } from "react-router";
 import * as z from "zod/mini";
+
+import { useDelayedLoading } from "@/hooks/use-delayed-loading";
+import { useLocalStorage } from "@/hooks/use-local-storage";
+import FavoriteStopCard from "@/pages/home/favorite-stop-card";
+import FavoriteStopsSkeleton from "@/pages/home/favorite-stops-skeleton";
+import { useFavoriteStopsData } from "@/pages/home/use-favorite-stops-data";
 
 type DataState = "data" | "empty" | "error" | "loading";
 

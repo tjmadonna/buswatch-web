@@ -1,7 +1,8 @@
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+
 import { APIError } from "@/data";
 import { fetchRoutePath, fetchRouteVehicles, type PathPoint, type Vehicle } from "@/data/routes";
 import { isAbortError } from "@/utils";
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 
 export const REFRESH_INTERVAL = 15; // seconds
 

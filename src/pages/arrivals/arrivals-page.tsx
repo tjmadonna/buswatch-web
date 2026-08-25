@@ -1,3 +1,7 @@
+import { RefreshCw, SearchX, ServerCrash } from "lucide-react";
+import { useParams } from "react-router";
+import * as z from "zod/mini";
+
 import Error from "@/components/error";
 import { FavoriteToggle } from "@/components/favorite-toggle";
 import { useDelayedLoading } from "@/hooks/use-delayed-loading";
@@ -10,9 +14,6 @@ import { parseOccupancy } from "@/pages/arrivals/occupancy";
 import { RouteFilter } from "@/pages/arrivals/route-filter";
 import { REFRESH_INTERVAL, useArrivalsData } from "@/pages/arrivals/use-arrivals-data";
 import { useTimer } from "@/pages/arrivals/use-timer";
-import { RefreshCw, SearchX, ServerCrash } from "lucide-react";
-import { useParams } from "react-router";
-import * as z from "zod/mini";
 
 export default function ArrivalsPage() {
     const params = useParams<{ stopID: string }>();

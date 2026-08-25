@@ -1,16 +1,18 @@
+import "maplibre-gl/dist/maplibre-gl.css";
+
+import { ArrowRight, BusFront, LocateFixed, MapPin, X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Map, type MapRef, Marker, Popup } from "react-map-gl/maplibre";
+import { useNavigate } from "react-router";
+import * as z from "zod/mini";
+
 import { APIError } from "@/data";
-import { fetchStopsByBounds, type Bounds, type Stop } from "@/data/stops";
+import { type Bounds, fetchStopsByBounds, type Stop } from "@/data/stops";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useTheme } from "@/hooks/use-theme";
 import { useUserLocation } from "@/hooks/use-user-location";
 import StopSearch from "@/pages/stops/stop-search";
 import { cls, isAbortError } from "@/utils";
-import { ArrowRight, BusFront, LocateFixed, MapPin, X } from "lucide-react";
-import "maplibre-gl/dist/maplibre-gl.css";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Map, Marker, Popup, type MapRef } from "react-map-gl/maplibre";
-import { useNavigate } from "react-router";
-import * as z from "zod/mini";
 
 const MAP_STYLE_LIGHT = "/positron.json";
 const MAP_STYLE_DARK = "/dark.json";

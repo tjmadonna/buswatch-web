@@ -1,7 +1,8 @@
-import { FavoriteToggle } from "@/components/favorite-toggle";
-import type { Stop } from "@/data/stops";
 import { MapPin } from "lucide-react";
 import { Link } from "react-router";
+
+import { FavoriteToggle } from "@/components/favorite-toggle";
+import type { Stop } from "@/data/stops";
 
 interface FavoriteStopCardProps {
     stop: Stop;

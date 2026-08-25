@@ -1,14 +1,17 @@
+import "maplibre-gl/dist/maplibre-gl.css";
+
+import { Bus, BusFront, ChevronUp, LocateFixed, MapPin, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Layer, Map, type MapRef, Marker, Source } from "react-map-gl/maplibre";
+import { useLocation, useParams } from "react-router";
+import * as z from "zod/mini";
+
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useTheme } from "@/hooks/use-theme";
 import { useUserLocation } from "@/hooks/use-user-location";
-import { Bus, BusFront, ChevronUp, LocateFixed, MapPin, X } from "lucide-react";
-import "maplibre-gl/dist/maplibre-gl.css";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Layer, Map, Marker, Source, type MapRef } from "react-map-gl/maplibre";
-import { useLocation, useParams } from "react-router";
-import * as z from "zod/mini";
-import { useShapesData } from "./use-vehicles-data";
 import { routeColors } from "@/utils/color";
+
+import { useShapesData } from "./use-vehicles-data";
 
 const MAP_STYLE_LIGHT = "/positron.json";
 const MAP_STYLE_DARK = "/dark.json";

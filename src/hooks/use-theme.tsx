@@ -1,5 +1,6 @@
-import { ThemeContext, type ThemeContextProps } from "@/hooks/theme-context";
 import { useContext } from "react";
+
+import { ThemeContext, type ThemeContextProps } from "@/hooks/theme-context";
 
 export function useTheme(): ThemeContextProps {
     const ctx = useContext(ThemeContext);

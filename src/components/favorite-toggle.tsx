@@ -1,6 +1,7 @@
-import { useLocalStorage } from "@/hooks/use-local-storage";
 import { Star } from "lucide-react";
 import * as z from "zod/mini";
+
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 interface FavoriteToggleProps {
     stopID: string;

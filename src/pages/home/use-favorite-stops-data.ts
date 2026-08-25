@@ -1,7 +1,8 @@
+import { useEffect, useEffectEvent, useState } from "react";
+
 import { APIError } from "@/data";
 import { fetchStops, type Stop } from "@/data/stops";
 import { isAbortError } from "@/utils";
-import { useEffect, useEffectEvent, useState } from "react";
 
 export function useFavoriteStopsData(stopIDs: string[]) {
     const [favoriteStops, setFavoriteStops] = useState<Stop[]>([]);

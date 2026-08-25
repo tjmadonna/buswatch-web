@@ -1,5 +1,6 @@
-import { apiBase, APIError } from "@/data";
 import * as z from "zod/mini";
+
+import { apiBase, APIError } from "@/data";
 
 const stopSchema = z.object({
     id: z.string(),

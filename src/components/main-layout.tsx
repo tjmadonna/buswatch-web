@@ -1,6 +1,7 @@
+import { Outlet } from "react-router";
+
 import NavBar from "@/components/nav-bar";
 import { ThemeProvider } from "@/hooks/theme-provider";
-import { Outlet } from "react-router";
 
 export default function MainLayout() {
     return (

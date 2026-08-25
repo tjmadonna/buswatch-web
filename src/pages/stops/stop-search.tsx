@@ -1,7 +1,8 @@
-import { fetchStopsByQuery, type Stop } from "@/data/stops";
-import { isAbortError } from "@/utils";
 import { Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+
+import { fetchStopsByQuery, type Stop } from "@/data/stops";
+import { isAbortError } from "@/utils";
 
 interface StopSearchProps {
     onSelect: (stop: Stop) => void;

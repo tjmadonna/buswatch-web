@@ -1,8 +1,9 @@
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+
 import { APIError } from "@/data";
-import { fetchArrivals, type Arrival } from "@/data/arrivals";
+import { type Arrival, fetchArrivals } from "@/data/arrivals";
 import { fetchStop, type Stop } from "@/data/stops";
 import { isAbortError } from "@/utils";
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 
 export const REFRESH_INTERVAL = 15; // seconds
 

@@ -3,6 +3,7 @@ import jsxA11y from "eslint-plugin-jsx-a11y";
 import reactCompiler from "eslint-plugin-react-compiler";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
 import { defineConfig, globalIgnores } from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
@@ -20,8 +21,13 @@ export default defineConfig([
         ],
         plugins: {
             "jsx-a11y": jsxA11y,
+            "simple-import-sort": simpleImportSort,
         },
-        rules: jsxA11y.configs.recommended.rules,
+        rules: {
+            ...jsxA11y.configs.recommended.rules,
+            "simple-import-sort/imports": "error",
+            "simple-import-sort/exports": "error",
+        },
         languageOptions: {
             ecmaVersion: 2020,
             globals: globals.browser,

@@ -1,5 +1,6 @@
-import NotFound from "@/components/error";
 import { SearchX } from "lucide-react";
+
+import NotFound from "@/components/error";
 
 export default function NotFoundPage() {
     return (

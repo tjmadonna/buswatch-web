@@ -1,7 +1,8 @@
-import { type OccupancyLevel } from "@/pages/arrivals/occupancy";
-import { routeColors } from "@/utils/color";
 import { Bus, Clock, Users } from "lucide-react";
 import { Link } from "react-router";
+
+import { type OccupancyLevel } from "@/pages/arrivals/occupancy";
+import { routeColors } from "@/utils/color";
 
 const occupancyConfig: Record<OccupancyLevel, { label: string; class: string; bars: number }> = {
     low: { label: "Seats available", class: "bg-occupancy-low", bars: 1 },

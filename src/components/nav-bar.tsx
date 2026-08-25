@@ -1,7 +1,8 @@
-import AppIcon from "@/components/app-icon";
-import { useTheme } from "@/hooks/use-theme";
 import { ChevronLeft, Map, Moon, Star, Sun } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router";
+
+import AppIcon from "@/components/app-icon";
+import { useTheme } from "@/hooks/use-theme";
 
 const LEAF_ROUTES = [/^\/stops\/[^/]+\/arrivals/, /^\/routes\/[^/]+\/vehicles/];
 
