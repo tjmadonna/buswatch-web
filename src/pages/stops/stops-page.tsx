@@ -185,6 +185,7 @@ export default function StopsPage() {
                             className="[&_.maplibregl-popup-tip]:border-t-card [&_.maplibregl-popup-content]:bg-card [&_.maplibregl-popup-content]:rounded-lg [&_.maplibregl-popup-content]:border-0 [&_.maplibregl-popup-content]:p-0 [&_.maplibregl-popup-content]:shadow-lg">
                             <div
                                 className="bg-card text-foreground w-56 rounded-lg p-3"
+                                role="presentation"
                                 onClick={(e) => e.stopPropagation()}>
                                 <div className="mb-2 flex items-start justify-between gap-2">
                                     <div>

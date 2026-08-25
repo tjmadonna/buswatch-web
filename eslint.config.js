@@ -1,4 +1,5 @@
 import js from "@eslint/js";
+import jsxA11y from "eslint-plugin-jsx-a11y";
 import reactCompiler from "eslint-plugin-react-compiler";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
@@ -17,6 +18,10 @@ export default defineConfig([
             reactRefresh.configs.vite,
             reactCompiler.configs.recommended,
         ],
+        plugins: {
+            "jsx-a11y": jsxA11y,
+        },
+        rules: jsxA11y.configs.recommended.rules,
         languageOptions: {
             ecmaVersion: 2020,
             globals: globals.browser,
