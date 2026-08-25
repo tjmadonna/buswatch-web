@@ -79,7 +79,11 @@ func createCompressedAssetFileServer(assetsFS fs.FS) http.Handler {
 		}
 
 		proxiedReq := r.Clone(r.Context())
-		proxiedReq.URL.Path = "/" + assetPath
+		if assetPath == "index.html" {
+			proxiedReq.URL.Path = "/"
+		} else {
+			proxiedReq.URL.Path = "/" + assetPath
+		}
 
 		encoding, suffix := negotiateCompression(r.Header.Get("Accept-Encoding"))
 		if encoding == "" {
