@@ -11,9 +11,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/tjmadonna/buswatch/asset"
-	"github.com/tjmadonna/buswatch/cmd/web/application"
-	"github.com/tjmadonna/buswatch/cmd/web/handler"
+	"github.com/tjmadonna/buswatch-web/asset"
+	"github.com/tjmadonna/buswatch-web/cmd/web/application"
+	"github.com/tjmadonna/buswatch-web/cmd/web/handler"
 )
 
 // createRoutes creates the routes for the application

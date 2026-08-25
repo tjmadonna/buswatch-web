@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/tjmadonna/buswatch/internal/database"
-	"github.com/tjmadonna/buswatch/internal/truetime"
+	"github.com/tjmadonna/buswatch-web/internal/database"
+	"github.com/tjmadonna/buswatch-web/internal/truetime"
 )
 
 type Environment string

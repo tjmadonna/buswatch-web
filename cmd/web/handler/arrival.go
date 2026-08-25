@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tjmadonna/buswatch/cmd/web/application"
-	"github.com/tjmadonna/buswatch/internal/database"
+	"github.com/tjmadonna/buswatch-web/cmd/web/application"
+	"github.com/tjmadonna/buswatch-web/internal/database"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )

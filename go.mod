@@ -1,4 +1,4 @@
-module github.com/tjmadonna/buswatch
+module github.com/tjmadonna/buswatch-web
 
 go 1.26.5
 

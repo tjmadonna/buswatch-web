@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/tjmadonna/buswatch/cmd/web/application"
+	"github.com/tjmadonna/buswatch-web/cmd/web/application"
 )
 
 func GetHealthHandler(app *application.Application) http.HandlerFunc {

@@ -11,9 +11,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/tjmadonna/buswatch/cmd/web/application"
-	"github.com/tjmadonna/buswatch/internal/database"
-	"github.com/tjmadonna/buswatch/internal/truetime"
+	"github.com/tjmadonna/buswatch-web/cmd/web/application"
+	"github.com/tjmadonna/buswatch-web/internal/database"
+	"github.com/tjmadonna/buswatch-web/internal/truetime"
 )
 
 // main is the entry point for the application
