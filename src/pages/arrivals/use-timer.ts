@@ -1,15 +1,13 @@
-import { useEffect, useState } from "react";
+import { createSignal, onCleanup } from "solid-js";
 
 export function useTimer() {
-    const [currentTime, setCurrentTime] = useState(new Date());
+    const [currentTime, setCurrentTime] = createSignal(new Date());
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentTime(new Date());
-        }, 1000);
+    const interval = setInterval(() => {
+        setCurrentTime(new Date());
+    }, 1000);
 
-        return () => clearInterval(interval);
-    }, []);
+    onCleanup(() => clearInterval(interval));
 
-    return { currentTime: currentTime };
+    return { currentTime };
 }

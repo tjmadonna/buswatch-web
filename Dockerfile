@@ -14,16 +14,16 @@ RUN --mount=type=secret,id=build_secrets \
 
 RUN chmod 444 /data/database.db
 
-# Build the React UI stage
+# Build the SolidJS UI stage
 FROM --platform=$BUILDPLATFORM node:24-alpine3.23 AS ui_builder
 
 RUN apk -U upgrade
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm install -g npm@latest && \
-    npm ci
+COPY package.json pnpm-lock.yaml ./
+RUN corepack enable && \
+    pnpm install --frozen-lockfile
 
 COPY index.html vite.config.ts tsconfig.json tsconfig.app.json tsconfig.node.json ./
 COPY src/ ./src/
@@ -31,7 +31,7 @@ COPY public/ ./public/
 
 RUN --mount=type=secret,id=build_secrets \
     set -a && . /run/secrets/build_secrets && set +a && \
-    npm run build
+    pnpm run build
 
 # Build web server stage
 FROM --platform=$BUILDPLATFORM docker.io/golang:1.26-bookworm AS app_builder

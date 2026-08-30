@@ -1,14 +1,14 @@
 interface AppIconProps {
-    className?: string;
+    class?: string;
 }
 
-export default function AppIcon({ className }: AppIconProps) {
+export default function AppIcon(props: AppIconProps) {
     return (
         <svg
             version="1.1"
             id="svg1"
             width="1066.6666"
-            className={className}
+            class={props.class}
             height="753.99994"
             fill="currentColor"
             viewBox="0 0 1066.6667 753.99997"

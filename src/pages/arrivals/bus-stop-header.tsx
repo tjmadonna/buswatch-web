@@ -1,33 +1,42 @@
-import { MapPin } from "lucide-react";
+import { A } from "@solidjs/router";
+import { MapPin } from "lucide-solid";
+import { For } from "solid-js";
 
 interface BusStopHeaderProps {
-    routes: string[];
     stopID: string;
     stopName: string;
 }
 
-export function BusStopHeader({ routes, stopID, stopName }: BusStopHeaderProps) {
+export function BusStopHeader(props: BusStopHeaderProps) {
     return (
-        <header className="flex flex-col gap-4">
-            <div className="flex items-start gap-3">
-                <div className="bg-primary/15 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
-                    <MapPin className="text-primary h-5 w-5" />
-                </div>
-                <div className="flex flex-col gap-0.5">
-                    <h1 className="text-foreground text-xl font-bold text-balance">{stopName}</h1>
-                    <p className="text-muted-foreground text-sm">Stop #{stopID}</p>
-                </div>
+        <header class="flex items-start gap-3">
+            <div class="bg-primary/15 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
+                <MapPin class="text-primary h-5 w-5" />
             </div>
-
-            <div className="flex flex-wrap gap-2">
-                {routes.map((route) => (
-                    <span
-                        key={route}
-                        className="bg-secondary text-secondary-foreground inline-flex items-center rounded-md px-2.5 py-1 text-sm font-semibold">
-                        {route}
-                    </span>
-                ))}
+            <div class="flex flex-col gap-0.5">
+                <h1 class="text-foreground text-xl font-bold text-balance">{props.stopName}</h1>
+                <p class="text-muted-foreground text-sm">Stop #{props.stopID}</p>
             </div>
         </header>
+    );
+}
+
+interface RouteBadgeListProps {
+    routes: string[];
+}
+
+export function RouteBadgeList(props: RouteBadgeListProps) {
+    return (
+        <div class="flex flex-wrap gap-2">
+            <For each={props.routes}>
+                {(route) => (
+                    <A
+                        href={`/routes/${encodeURIComponent(route)}/vehicles`}
+                        class="bg-secondary text-secondary-foreground hover:bg-secondary/80 focus-visible:ring-primary inline-flex items-center rounded-md px-2.5 py-1 text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2">
+                        {route}
+                    </A>
+                )}
+            </For>
+        </div>
     );
 }

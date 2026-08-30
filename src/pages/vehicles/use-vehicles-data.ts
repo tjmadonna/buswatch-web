@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import type { Accessor } from "solid-js";
+import { createEffect, createSignal, onCleanup } from "solid-js";
 
 import { APIError } from "@/data";
 import { fetchRoutePath, fetchRouteVehicles, type PathPoint, type Vehicle } from "@/data/routes";
@@ -6,76 +7,70 @@ import { isAbortError } from "@/utils";
 
 export const REFRESH_INTERVAL = 15; // seconds
 
-export function useShapesData(routeID?: string) {
-    const [error, setError] = useState<APIError | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isRefreshing, startRefreshTransition] = useTransition();
-    const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-    const [path, setPath] = useState<PathPoint[] | null>(null);
-    const [vehicles, setVehicles] = useState<Vehicle[] | null>(null);
+export function useShapesData(routeID: Accessor<string | undefined>) {
+    const [error, setError] = createSignal<APIError | null>(null);
+    const [isLoading, setIsLoading] = createSignal(true);
+    const [isRefreshing, setIsRefreshing] = createSignal(false);
+    const [lastUpdated, setLastUpdated] = createSignal<Date | null>(null);
+    const [path, setPath] = createSignal<PathPoint[] | null>(null);
+    const [vehicles, setVehicles] = createSignal<Vehicle[] | null>(null);
 
-    const abortControllerRef = useRef<AbortController | null>(null);
-    const routeIDRef = useRef<string | null>(null);
-    const timerRef = useRef<number | null>(null);
+    let activeRouteID: string | null = null;
+    let activeController: AbortController | null = null;
+    let refreshTimer: number | null = null;
 
-    const clearTimer = useCallback(() => {
-        if (timerRef.current !== null) {
-            clearInterval(timerRef.current);
-            timerRef.current = null;
+    function stopRefreshTimer() {
+        if (refreshTimer !== null) {
+            clearInterval(refreshTimer);
+            refreshTimer = null;
         }
-    }, []);
+    }
 
-    const fetchAndUpdateVehicles = useCallback(
-        async (id: string, signal: AbortSignal) => {
-            try {
-                const fetched = await fetchRouteVehicles(id, signal);
-                setVehicles(fetched);
-                setLastUpdated(new Date());
-                setError(null);
-            } catch (err: unknown) {
-                if (isAbortError(err)) {
-                    return;
-                }
-                if (err instanceof APIError && err.status === 404) {
-                    setError(err);
-                    clearTimer();
-                    return;
-                }
-                console.error("Failed to refresh vehicles:", err);
+    function startRefreshTimer(id: string, signal: AbortSignal) {
+        stopRefreshTimer();
+        refreshTimer = window.setInterval(() => void pollVehicles(id, signal), REFRESH_INTERVAL * 1000);
+    }
+
+    async function pollVehicles(id: string, signal: AbortSignal) {
+        try {
+            const fetched = await fetchRouteVehicles(id, signal);
+            setVehicles(fetched);
+            setLastUpdated(new Date());
+            setError(null);
+        } catch (err: unknown) {
+            if (isAbortError(err)) {
+                return;
             }
-        },
-        [clearTimer],
-    );
+            if (err instanceof APIError && err.status === 404) {
+                setError(err);
+                stopRefreshTimer();
+                return;
+            }
+            console.error("Failed to refresh vehicles:", err);
+        }
+    }
 
-    const startTimer = useCallback(
-        (id: string, signal: AbortSignal) => {
-            clearTimer();
-            timerRef.current = window.setInterval(() => {
-                void fetchAndUpdateVehicles(id, signal);
-            }, REFRESH_INTERVAL * 1000);
-        },
-        [clearTimer, fetchAndUpdateVehicles],
-    );
+    function beginRequest(id: string): AbortSignal {
+        activeController?.abort();
+        const controller = new AbortController();
+        activeController = controller;
+        activeRouteID = id;
+        return controller.signal;
+    }
 
-    useEffect(() => {
-        if (routeID === undefined) {
+    createEffect(() => {
+        const id = routeID();
+        if (id === undefined) {
             return;
         }
 
-        const id = routeID;
-        routeIDRef.current = id;
+        const signal = beginRequest(id);
+        setIsLoading(true);
 
-        const controller = new AbortController();
-        abortControllerRef.current = controller;
-        const { signal } = controller;
-
-        async function init() {
-            setIsLoading(true);
+        void (async () => {
             try {
                 await Promise.all([
-                    fetchRoutePath(id, signal).then((fetched) => {
-                        setPath(fetched);
-                    }),
+                    fetchRoutePath(id, signal).then((fetched) => setPath(fetched)),
                     fetchRouteVehicles(id, signal).then((fetched) => {
                         setVehicles(fetched);
                         setLastUpdated(new Date());
@@ -85,7 +80,7 @@ export function useShapesData(routeID?: string) {
                     return;
                 }
                 setError(null);
-                startTimer(id, signal);
+                startRefreshTimer(id, signal);
             } catch (err: unknown) {
                 if (isAbortError(err)) {
                     return;
@@ -98,41 +93,29 @@ export function useShapesData(routeID?: string) {
                     setIsLoading(false);
                 }
             }
-        }
+        })();
 
-        void init();
+        onCleanup(() => {
+            activeController?.abort();
+            stopRefreshTimer();
+        });
+    });
 
-        return () => {
-            abortControllerRef.current?.abort();
-            abortControllerRef.current = null;
-            clearTimer();
-        };
-    }, [routeID, clearTimer, startTimer]);
-
-    const refresh = useCallback(() => {
-        const id = routeIDRef.current;
-        if (id === null) {
+    function refresh() {
+        if (activeRouteID === null) {
             return;
         }
 
-        clearTimer();
-        abortControllerRef.current?.abort();
-        const controller = new AbortController();
-        abortControllerRef.current = controller;
+        const id = activeRouteID;
+        const signal = beginRequest(id);
 
-        startRefreshTransition(async () => {
-            await fetchAndUpdateVehicles(id, controller.signal);
-            startTimer(id, controller.signal);
-        });
-    }, [clearTimer, fetchAndUpdateVehicles, startRefreshTransition, startTimer]);
+        setIsRefreshing(true);
+        void (async () => {
+            await pollVehicles(id, signal);
+            startRefreshTimer(id, signal);
+            setIsRefreshing(false);
+        })();
+    }
 
-    return {
-        error: error,
-        isLoading: isLoading,
-        isRefreshing: isRefreshing,
-        lastUpdated: lastUpdated,
-        path: path,
-        refresh: refresh,
-        vehicles: vehicles,
-    };
+    return { error, isLoading, isRefreshing, lastUpdated, path, refresh, vehicles };
 }

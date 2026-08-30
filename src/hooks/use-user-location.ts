@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { createSignal } from "solid-js";
 
 interface UserLocation {
     latitude: number;
@@ -6,9 +6,9 @@ interface UserLocation {
 }
 
 export function useUserLocation() {
-    const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
-    const [isLocating, setIsLocating] = useState(false);
-    const [locationError, setLocationError] = useState<string | null>(null);
+    const [userLocation, setUserLocation] = createSignal<UserLocation | null>(null);
+    const [isLocating, setIsLocating] = createSignal(false);
+    const [locationError, setLocationError] = createSignal<string | null>(null);
 
     function locateUser() {
         if (!navigator.geolocation) {

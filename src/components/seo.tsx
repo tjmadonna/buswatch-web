@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { createEffect } from "solid-js";
 
 const SITE_NAME = "Pittsburgh Bus Watch";
 const SITE_URL = "https://app.pghbuswatch.com";
@@ -22,7 +22,7 @@ function upsertMeta(attribute: "name" | "property", key: string, content: string
 }
 
 export default function SEO({ description = DEFAULT_DESCRIPTION, noIndex = false, title }: SEOProps) {
-    useEffect(() => {
+    createEffect(() => {
         const pageTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
         const canonicalURL = new URL(window.location.pathname, SITE_URL).toString();
 
@@ -42,7 +42,7 @@ export default function SEO({ description = DEFAULT_DESCRIPTION, noIndex = false
             document.head.appendChild(canonical);
         }
         canonical.href = canonicalURL;
-    }, [description, noIndex, title]);
+    });
 
     return null;
 }

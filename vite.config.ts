@@ -1,19 +1,24 @@
-import babel from "@rolldown/plugin-babel";
 import tailwindcss from "@tailwindcss/vite";
-import react, { reactCompilerPreset } from "@vitejs/plugin-react";
+import { writeFileSync } from "fs";
 import { resolve } from "path";
 import { defineConfig, type Plugin } from "vite";
+import solid from "vite-plugin-solid";
 import { brotliCompressSync, constants, gzipSync } from "zlib";
 
+const OUT_DIR = "asset/assets";
+
 export default defineConfig({
-    plugins: [react(), babel({ presets: [reactCompilerPreset()] }), tailwindcss(), compressBuildAssets()],
+    plugins: [solid(), tailwindcss(), compressBuildAssets()],
     build: {
-        outDir: "asset/assets",
+        outDir: OUT_DIR,
     },
     resolve: {
         alias: {
             "@": resolve(import.meta.dirname, "src"),
         },
+    },
+    optimizeDeps: {
+        exclude: ["maplibre-gl"],
     },
 });
 
@@ -24,15 +29,10 @@ function compressBuildAssets(): Plugin {
         name: "compress-build-assets",
         apply: "build",
         enforce: "post",
-        generateBundle(_, bundle) {
-            for (const output of Object.values(bundle)) {
-                const sourceBuffer =
-                    output.type === "chunk"
-                        ? Buffer.from(output.code)
-                        : typeof output.source === "string"
-                          ? Buffer.from(output.source)
-                          : Buffer.from(output.source);
+        writeBundle(options, bundle) {
+            const outDir = options.dir ?? OUT_DIR;
 
+            for (const output of Object.values(bundle)) {
                 if (output.fileName.endsWith(".gz") || output.fileName.endsWith(".br")) {
                     continue;
                 }
@@ -47,21 +47,24 @@ function compressBuildAssets(): Plugin {
                     continue;
                 }
 
-                this.emitFile({
-                    type: "asset",
-                    fileName: `${output.fileName}.gz`,
-                    source: gzipSync(sourceBuffer, { level: 9 }),
-                });
+                const sourceBuffer =
+                    output.type === "chunk"
+                        ? Buffer.from(output.code)
+                        : typeof output.source === "string"
+                          ? Buffer.from(output.source)
+                          : Buffer.from(output.source);
 
-                this.emitFile({
-                    type: "asset",
-                    fileName: `${output.fileName}.br`,
-                    source: brotliCompressSync(sourceBuffer, {
+                const outPath = resolve(outDir, output.fileName);
+
+                writeFileSync(`${outPath}.gz`, gzipSync(sourceBuffer, { level: 9 }));
+                writeFileSync(
+                    `${outPath}.br`,
+                    brotliCompressSync(sourceBuffer, {
                         params: {
                             [constants.BROTLI_PARAM_QUALITY]: 11,
                         },
                     }),
-                });
+                );
             }
         },
     };

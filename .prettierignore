@@ -1,5 +1,6 @@
 # NPM
 node_modules/
+asset/assets/
 
 # Output
 dist/
@@ -11,5 +12,6 @@ dist/
 **/public/
 
 # Project
+gtfs/
 notes*.md
 *.jsonc

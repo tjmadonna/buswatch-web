@@ -1,9 +1,7 @@
 import js from "@eslint/js";
 import jsxA11y from "eslint-plugin-jsx-a11y";
-import reactCompiler from "eslint-plugin-react-compiler";
-import reactHooks from "eslint-plugin-react-hooks";
-import reactRefresh from "eslint-plugin-react-refresh";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
+import solid from "eslint-plugin-solid/configs/typescript";
 import { defineConfig, globalIgnores } from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
@@ -12,13 +10,7 @@ export default defineConfig([
     globalIgnores(["dist"]),
     {
         files: ["**/*.{ts,tsx}"],
-        extends: [
-            js.configs.recommended,
-            tseslint.configs.recommendedTypeChecked,
-            reactHooks.configs.flat.recommended,
-            reactRefresh.configs.vite,
-            reactCompiler.configs.recommended,
-        ],
+        extends: [js.configs.recommended, tseslint.configs.recommendedTypeChecked, solid],
         plugins: {
             "jsx-a11y": jsxA11y,
             "simple-import-sort": simpleImportSort,

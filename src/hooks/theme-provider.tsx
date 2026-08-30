@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import type { ParentProps } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
 
 import { type Theme, ThemeContext } from "@/hooks/theme-context";
 
@@ -14,15 +15,15 @@ function applyTheme(theme: Theme) {
     document.documentElement.classList.toggle("dark", theme === "dark");
 }
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const [theme, setTheme] = useState<Theme>(getInitialTheme);
+export function ThemeProvider(props: ParentProps) {
+    const [theme, setTheme] = createSignal<Theme>(getInitialTheme());
 
-    useEffect(() => {
-        applyTheme(theme);
-        localStorage.setItem("theme", theme);
-    }, [theme]);
+    createEffect(() => {
+        applyTheme(theme());
+        localStorage.setItem("theme", theme());
+    });
 
     const toggle = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 
-    return <ThemeContext value={{ theme, toggle }}>{children}</ThemeContext>;
+    return <ThemeContext.Provider value={{ theme, toggle }}>{props.children}</ThemeContext.Provider>;
 }

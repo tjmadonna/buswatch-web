@@ -1,4 +1,4 @@
-import { SearchX } from "lucide-react";
+import { SearchX } from "lucide-solid";
 
 import NotFound from "@/components/error";
 
