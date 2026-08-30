@@ -1,6 +1,6 @@
 import tailwindcss from "@tailwindcss/vite";
-import { writeFileSync } from "fs";
-import { resolve } from "path";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "fs";
+import { join, resolve } from "path";
 import { defineConfig, type Plugin } from "vite";
 import solid from "vite-plugin-solid";
 import { brotliCompressSync, constants, gzipSync } from "zlib";
@@ -23,49 +23,63 @@ export default defineConfig({
 });
 
 function compressBuildAssets(): Plugin {
-    const compressibleExtensions = new Set([".css", ".js", ".json", ".html", ".svg", ".txt", ".xml", ".wasm"]);
+    const compressibleExtensions = new Set([".css", ".js", ".json", ".svg", ".txt", ".xml", ".wasm"]);
+
+    function compressFile(filePath: string) {
+        const sourceBuffer = readFileSync(filePath);
+
+        writeFileSync(`${filePath}.gz`, gzipSync(sourceBuffer, { level: 9 }));
+        writeFileSync(
+            `${filePath}.br`,
+            brotliCompressSync(sourceBuffer, {
+                params: {
+                    [constants.BROTLI_PARAM_QUALITY]: 11,
+                },
+            }),
+        );
+    }
+
+    function walkAndCompress(dir: string) {
+        const minSizeBytes = 1024; // 1 KB minimum
+
+        for (const entry of readdirSync(dir)) {
+            const fullPath = join(dir, entry);
+            const stat = statSync(fullPath);
+
+            if (stat.isDirectory()) {
+                walkAndCompress(fullPath);
+                continue;
+            }
+
+            if (entry.endsWith(".gz") || entry.endsWith(".br")) {
+                continue;
+            }
+
+            const extensionIndex = entry.lastIndexOf(".");
+            if (extensionIndex < 0) {
+                continue;
+            }
+
+            const extension = entry.slice(extensionIndex);
+            if (!compressibleExtensions.has(extension)) {
+                continue;
+            }
+
+            if (stat.size < minSizeBytes) {
+                continue;
+            }
+
+            compressFile(fullPath);
+        }
+    }
 
     return {
         name: "compress-build-assets",
         apply: "build",
         enforce: "post",
-        writeBundle(options, bundle) {
-            const outDir = options.dir ?? OUT_DIR;
-
-            for (const output of Object.values(bundle)) {
-                if (output.fileName.endsWith(".gz") || output.fileName.endsWith(".br")) {
-                    continue;
-                }
-
-                const extensionIndex = output.fileName.lastIndexOf(".");
-                if (extensionIndex < 0) {
-                    continue;
-                }
-
-                const extension = output.fileName.slice(extensionIndex);
-                if (!compressibleExtensions.has(extension)) {
-                    continue;
-                }
-
-                const sourceBuffer =
-                    output.type === "chunk"
-                        ? Buffer.from(output.code)
-                        : typeof output.source === "string"
-                          ? Buffer.from(output.source)
-                          : Buffer.from(output.source);
-
-                const outPath = resolve(outDir, output.fileName);
-
-                writeFileSync(`${outPath}.gz`, gzipSync(sourceBuffer, { level: 9 }));
-                writeFileSync(
-                    `${outPath}.br`,
-                    brotliCompressSync(sourceBuffer, {
-                        params: {
-                            [constants.BROTLI_PARAM_QUALITY]: 11,
-                        },
-                    }),
-                );
-            }
+        writeBundle(options) {
+            const outDir = options.dir ?? resolve(import.meta.dirname, OUT_DIR);
+            walkAndCompress(outDir);
         },
     };
 }
