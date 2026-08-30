@@ -10,6 +10,8 @@ import { createEffect, createMemo, createSignal, onCleanup, onMount, Show } from
 import { render } from "solid-js/web";
 import * as z from "zod/mini";
 
+import MAP_STYLE_DARK from "@/assets/dark.json?url";
+import MAP_STYLE_LIGHT from "@/assets/positron.json?url";
 import SEO from "@/components/seo";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useTheme } from "@/hooks/use-theme";
@@ -19,9 +21,6 @@ import { routeColors } from "@/utils/color";
 import { useShapesData } from "./use-vehicles-data";
 
 maplibregl.setWorkerUrl(workerUrl);
-
-const MAP_STYLE_LIGHT = "/positron.json";
-const MAP_STYLE_DARK = "/dark.json";
 
 const DEFAULT_STATE = {
     longitude: -79.9959,

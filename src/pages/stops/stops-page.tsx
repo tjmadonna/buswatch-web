@@ -9,6 +9,8 @@ import { createEffect, createSignal, For, onCleanup, onMount, Show } from "solid
 import { render } from "solid-js/web";
 import * as z from "zod/mini";
 
+import MAP_STYLE_DARK from "@/assets/dark.json?url";
+import MAP_STYLE_LIGHT from "@/assets/positron.json?url";
 import { APIError } from "@/data";
 import { type Bounds, fetchStopsByBounds, type Stop } from "@/data/stops";
 import { useLocalStorage } from "@/hooks/use-local-storage";
@@ -19,8 +21,6 @@ import { cls, isAbortError } from "@/utils";
 
 maplibregl.setWorkerUrl(workerUrl);
 
-const MAP_STYLE_LIGHT = "/positron.json";
-const MAP_STYLE_DARK = "/dark.json";
 const MIN_ZOOM = 13;
 
 const DEFAULT_STATE = {
