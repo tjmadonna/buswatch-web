@@ -131,8 +131,8 @@ export default function VehiclesPage() {
     let hasLoadedOnce = false;
 
     function syncRouteLayer() {
-        if (!map || !hasLoadedOnce) return;
         const geojson = routeGeoJSON();
+        if (!map || !hasLoadedOnce) return;
         const source = map.getSource("route-path") as GeoJSONSourceLike | undefined;
 
         if (!geojson) {
