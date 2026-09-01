@@ -90,6 +90,7 @@ export default function VehiclesPage() {
     const { userLocation, isLocating, locationError, locateUser } = useUserLocation();
 
     const [showLabel, setShowLabel] = createSignal(true);
+    const [mapReady, setMapReady] = createSignal(false);
 
     const routeID = () => params.routeID ?? "";
     const mapStyle = () => (theme() === "dark" ? MAP_STYLE_DARK : MAP_STYLE_LIGHT);
@@ -128,11 +129,11 @@ export default function VehiclesPage() {
         }
     >();
 
-    let hasLoadedOnce = false;
-
     function syncRouteLayer() {
         const geojson = routeGeoJSON();
-        if (!map || !hasLoadedOnce) return;
+        const ready = mapReady();
+        if (!map || !ready) return;
+
         const source = map.getSource("route-path") as GeoJSONSourceLike | undefined;
 
         if (!geojson) {
@@ -144,21 +145,25 @@ export default function VehiclesPage() {
         if (source) {
             source.setData(geojson);
         } else {
-            map.addSource("route-path", { type: "geojson", data: geojson });
-            map.addLayer({
-                id: "route-path-line",
-                type: "line",
-                source: "route-path",
-                paint: {
-                    "line-color": routeColors[routeID()] ?? "var(--color-primary)",
-                    "line-width": 4,
-                    "line-opacity": 0.85,
-                },
-                layout: {
-                    "line-join": "round",
-                    "line-cap": "round",
-                },
-            });
+            if (!map.getSource("route-path")) {
+                map.addSource("route-path", { type: "geojson", data: geojson });
+            }
+            if (!map.getLayer("route-path-line")) {
+                map.addLayer({
+                    id: "route-path-line",
+                    type: "line",
+                    source: "route-path",
+                    paint: {
+                        "line-color": routeColors[routeID()] ?? "var(--color-primary)",
+                        "line-width": 4,
+                        "line-opacity": 0.85,
+                    },
+                    layout: {
+                        "line-join": "round",
+                        "line-cap": "round",
+                    },
+                });
+            }
         }
     }
 
@@ -182,12 +187,8 @@ export default function VehiclesPage() {
             setSavedState({ longitude: lng, latitude: lat, zoom });
         });
 
-        // eslint-disable-next-line solid/reactivity
-        map.on("load", () => {
-            hasLoadedOnce = true;
-            syncRouteLayer();
-        });
-        map.on("style.load", syncRouteLayer);
+        map.on("load", () => setMapReady(true));
+        map.on("style.load", () => setMapReady(true));
 
         onCleanup(() => {
             stopMarker?.dispose();
