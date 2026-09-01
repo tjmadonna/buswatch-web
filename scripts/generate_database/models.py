@@ -18,6 +18,11 @@ replacements = {
     "ymca": "YMCA",
     "mercy hospital": "Mercy Hospital",
     "va": "VA",
+    "amtrak": "Amtrak",
+    "pitt": "Pitt",
+    "carnegie": "Carnegie",
+    "mellon": "Mellon",
+    "mt": "Mt",
 }
 
 
