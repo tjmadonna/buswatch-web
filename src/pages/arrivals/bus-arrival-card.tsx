@@ -42,7 +42,7 @@ export default function BusArrivalCard(props: BusArrivalCardProps) {
             <div
                 class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg font-bold text-white"
                 style={{ "background-color": routeColors[props.routeID] ?? "var(--color-primary)" }}>
-                <span class="text-lg">{props.routeID}</span>
+                <span class={props.routeID.length < 4 ? "text-lg" : "text-base"}>{props.routeID}</span>
             </div>
 
             <div class="flex min-w-0 flex-1 flex-col gap-1">
