@@ -21,9 +21,11 @@ function upsertMeta(attribute: "name" | "property", key: string, content: string
     element.content = content;
 }
 
-export default function SEO({ description = DEFAULT_DESCRIPTION, noIndex = false, title }: SEOProps) {
+export default function SEO(props: SEOProps) {
     createEffect(() => {
-        const pageTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
+        const description = props.description ?? DEFAULT_DESCRIPTION;
+        const noIndex = props.noIndex ?? false;
+        const pageTitle = props.title ? `${props.title} | ${SITE_NAME}` : SITE_NAME;
         const canonicalURL = new URL(window.location.pathname, SITE_URL).toString();
 
         document.title = pageTitle;
